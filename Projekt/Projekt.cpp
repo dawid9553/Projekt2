@@ -1,6 +1,6 @@
 ﻿// Projekt.cpp: definiuje punkt wejścia dla aplikacji.
 //
-
+#include <iostream>
 #include "Projekt.h"
 
 using namespace std;
