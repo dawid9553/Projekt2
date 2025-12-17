@@ -1,13 +1,38 @@
-﻿// Projekt.cpp: definiuje punkt wejścia dla aplikacji.
-//
+﻿// ================================
+// 1. INCLUDE + STAŁE
+// ================================
+#include <SDL2/SDL.h>
 #include <iostream>
-#include "Projekt.h"
-#include <SDL.h>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
+#include <cmath>
+#include <algorithm>
 
 using namespace std;
 
-int main(int argc, char* argv[])
-{
-	cout << "Hello CMake." << endl;
-	return 0;
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 600;
+
+
+// ================================
+// 2. STRUKTURA RYBY
+// ================================
+struct Fish {
+    float x, y;
+    float size;
+    float speed;
+    bool isPlayer;
+};
+
+
+// ================================
+// 3. KOLIZJE
+// ================================
+bool checkCollision(const Fish& a, const Fish& b) {
+    float dx = a.x - b.x;
+    float dy = a.y - b.y;
+    float distance = sqrt(dx * dx + dy * dy);
+    return distance < (a.size / 2 + b.size / 2);
 }
+
