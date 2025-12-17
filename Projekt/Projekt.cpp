@@ -36,3 +36,24 @@ bool checkCollision(const Fish& a, const Fish& b) {
     return distance < (a.size / 2 + b.size / 2);
 }
 
+// ================================
+// 4. MAIN + INICJALIZACJA SDL
+// ================================
+int main(int argc, char* argv[])
+{
+    SDL_Init(SDL_INIT_VIDEO);
+
+    SDL_Window* window = SDL_CreateWindow(
+        "Fish Eat Get Big",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        SCREEN_WIDTH,
+        SCREEN_HEIGHT,
+        0
+    );
+
+    SDL_Renderer* renderer =
+        SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+    srand(time(nullptr));
+
