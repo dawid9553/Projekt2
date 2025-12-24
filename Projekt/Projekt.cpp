@@ -14,7 +14,6 @@ using namespace std;
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 
-
 // ================================
 // 2. STRUKTURA RYBY
 // ================================
@@ -24,7 +23,6 @@ struct Fish {
     float speed;
     bool isPlayer;
 };
-
 
 // ================================
 // 3. KOLIZJE
@@ -37,7 +35,15 @@ bool checkCollision(const Fish& a, const Fish& b) {
 }
 
 // ================================
-// 4. MAIN + INICJALIZACJA SDL
+// 4. STANY GRY
+// ================================
+enum GameState {
+    MENU,
+    GAME
+};
+
+// ================================
+// 5. MAIN
 // ================================
 int main(int argc, char* argv[])
 {
@@ -56,8 +62,11 @@ int main(int argc, char* argv[])
         SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     srand(time(nullptr));
+
+    GameState gameState = MENU;
+
     // ================================
-    // 5. TWORZENIE GRACZA I RYB
+    // GRACZ I RYBY
     // ================================
     Fish player{ 400, 300, 30, 5, true };
 
@@ -72,102 +81,136 @@ int main(int argc, char* argv[])
             });
     }
 
+    // Przycisk START
+    SDL_Rect startBtn = { 300, 250, 200, 80 };
 
-    // ================================
-    // 6. PĘTLA GRY + STEROWANIE
-    // ================================
     bool running = true;
     SDL_Event event;
 
+    // ================================
+    // PĘTLA GRY
+    // ================================
     while (running) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT)
                 running = false;
-        }
 
-        const Uint8* state = SDL_GetKeyboardState(NULL);
-        if (state[SDL_SCANCODE_W]) player.y -= player.speed;
-        if (state[SDL_SCANCODE_S]) player.y += player.speed;
-        if (state[SDL_SCANCODE_A]) player.x -= player.speed;
-        if (state[SDL_SCANCODE_D]) player.x += player.speed;
+            // Klawiatura
+            if (event.type == SDL_KEYDOWN) {
+                if (gameState == MENU && event.key.keysym.scancode == SDL_SCANCODE_RETURN)
+                    gameState = GAME;
 
-
-        // ================================
-        // 7. GRANICE MAPY + RUCH RYB
-        // ================================
-        player.x = max(player.size / 2,
-            min(player.x, SCREEN_WIDTH - player.size / 2));
-
-        player.y = max(player.size / 2,
-            min(player.y, SCREEN_HEIGHT - player.size / 2));
-
-        for (auto& f : fishes) {
-            f.x += (rand() % 3 - 1) * f.speed;
-            f.y += (rand() % 3 - 1) * f.speed;
-        }
-
-
-        // ================================
-        // 8. LOGIKA ZJADANIA / GAME OVER
-        // ================================
-        for (int i = 0; i < fishes.size(); i++) {
-            if (checkCollision(player, fishes[i])) {
-                if (player.size >= fishes[i].size) {
-                    player.size += fishes[i].size * 0.2f;
-                    fishes[i] = fishes.back();
-                    fishes.pop_back();
-                }
-                else {
-                    cout << "GAME OVER!" << endl;
+                if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
                     running = false;
+            }
+
+            // Myszka - START
+            if (event.type == SDL_MOUSEBUTTONDOWN && gameState == MENU) {
+                int mx = event.button.x;
+                int my = event.button.y;
+
+                if (mx >= startBtn.x && mx <= startBtn.x + startBtn.w &&
+                    my >= startBtn.y && my <= startBtn.y + startBtn.h) {
+                    gameState = GAME;
                 }
-                break;
             }
         }
 
+        // ================================
+        // LOGIKA GRY
+        // ================================
+        if (gameState == GAME) {
+            const Uint8* state = SDL_GetKeyboardState(NULL);
+            if (state[SDL_SCANCODE_W]) player.y -= player.speed;
+            if (state[SDL_SCANCODE_S]) player.y += player.speed;
+            if (state[SDL_SCANCODE_A]) player.x -= player.speed;
+            if (state[SDL_SCANCODE_D]) player.x += player.speed;
+
+            // Granice gracza
+            player.x = max(player.size / 2,
+                min(player.x, SCREEN_WIDTH - player.size / 2));
+            player.y = max(player.size / 2,
+                min(player.y, SCREEN_HEIGHT - player.size / 2));
+
+            // Ruch ryb + granice
+            for (auto& f : fishes) {
+                f.x += (rand() % 3 - 1) * f.speed;
+                f.y += (rand() % 3 - 1) * f.speed;
+
+                f.x = max(f.size / 2,
+                    min(f.x, SCREEN_WIDTH - f.size / 2));
+                f.y = max(f.size / 2,
+                    min(f.y, SCREEN_HEIGHT - f.size / 2));
+            }
+
+            // Kolizje
+            for (int i = 0; i < fishes.size(); i++) {
+                if (checkCollision(player, fishes[i])) {
+                    if (player.size >= fishes[i].size) {
+                        player.size += fishes[i].size * 0.2f;
+                        fishes[i] = fishes.back();
+                        fishes.pop_back();
+                    }
+                    else {
+                        cout << "GAME OVER!" << endl;
+                        running = false;
+                    }
+                    break;
+                }
+            }
+        }
 
         // ================================
-        // 9. RENDEROWANIE
+        // RENDER
         // ================================
-        SDL_SetRenderDrawColor(renderer, 0, 100, 200, 255);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        // Gracz
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-        SDL_Rect pRect = {
-            int(player.x - player.size / 2),
-            int(player.y - player.size / 2),
-            int(player.size),
-            int(player.size)
-        };
-        SDL_RenderFillRect(renderer, &pRect);
+        if (gameState == MENU) {
+            SDL_SetRenderDrawColor(renderer, 0, 100, 200, 255);
+            SDL_RenderClear(renderer);
 
-        // Ryby
-        for (auto& f : fishes) {
-            if (f.size <= player.size)
-                SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-            else
-                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-
-            SDL_Rect rect = {
-                int(f.x - f.size / 2),
-                int(f.y - f.size / 2),
-                int(f.size),
-                int(f.size)
+            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+            SDL_RenderFillRect(renderer, &startBtn);
+        }
+        else {
+            // Gracz
+            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+            SDL_Rect pRect = {
+                int(player.x - player.size / 2),
+                int(player.y - player.size / 2),
+                int(player.size),
+                int(player.size)
             };
-            SDL_RenderFillRect(renderer, &rect);
+            SDL_RenderFillRect(renderer, &pRect);
+
+            // Ryby
+            for (auto& f : fishes) {
+                if (f.size <= player.size)
+                    SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+                else
+                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+
+                SDL_Rect rect = {
+                    int(f.x - f.size / 2),
+                    int(f.y - f.size / 2),
+                    int(f.size),
+                    int(f.size)
+                };
+                SDL_RenderFillRect(renderer, &rect);
+            }
         }
 
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
 
-
     // ================================
-    // 10. ZAMYKANIE PROGRAMU
+    // ZAMYKANIE
     // ================================
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+
     return 0;
 }
