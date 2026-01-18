@@ -1,4 +1,4 @@
-﻿// ================================
+// ================================
 // 1. INCLUDE + STAŁE
 // ================================
 #include <SDL2/SDL.h>
@@ -11,8 +11,8 @@
 
 using namespace std;
 
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
+const int SCREEN_WIDTH = 1200;
+const int SCREEN_HEIGHT = 800;
 
 // ================================
 // 2. STRUKTURA RYBY
@@ -68,21 +68,30 @@ int main(int argc, char* argv[])
     // ================================
     // GRACZ I RYBY
     // ================================
-    Fish player{ 400, 300, 30, 5, true };
+    Fish player{ SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 30, 5, true };
 
-    vector<Fish> fishes;
+    vector<Fish> fish;
     for (int i = 0; i < 10; i++) {
-        fishes.push_back({
+        fish.push_back({
             float(rand() % SCREEN_WIDTH),
             float(rand() % SCREEN_HEIGHT),
-            float(15 + rand() % 40),
-            float(1 + rand() % 3),
+            float(20),
+            float(2),
+            false
+            });
+    }
+    for (int i = 0; i < 10; i++) {
+        fish.push_back({
+            float(rand() % SCREEN_WIDTH),
+            float(rand() % SCREEN_HEIGHT),
+            float(40),
+            float(3),
             false
             });
     }
 
     // Przycisk START
-    SDL_Rect startBtn = { 300, 250, 200, 80 };
+    SDL_Rect startBtn = { SCREEN_WIDTH/2-100, SCREEN_HEIGHT/2-40, 200, 80 };
 
     bool running = true;
     SDL_Event event;
@@ -131,11 +140,20 @@ int main(int argc, char* argv[])
                 min(player.x, SCREEN_WIDTH - player.size / 2));
             player.y = max(player.size / 2,
                 min(player.y, SCREEN_HEIGHT - player.size / 2));
-
             // Ruch ryb + granice
-            for (auto& f : fishes) {
-                f.x += (rand() % 3 - 1) * f.speed;
-                f.y += (rand() % 3 - 1) * f.speed;
+            for (auto& f : fish) {
+                if (f.size == 20) {
+                    if (f.x == SCREEN_WIDTH - f.size/2)
+                        f.x = f.size/2;
+
+					f.x += 2 * f.speed;
+                        
+                }
+                else {
+                    f.y -= (rand() % 3 - 1) * f.speed;
+
+                }
+
 
                 f.x = max(f.size / 2,
                     min(f.x, SCREEN_WIDTH - f.size / 2));
@@ -144,12 +162,12 @@ int main(int argc, char* argv[])
             }
 
             // Kolizje
-            for (int i = 0; i < fishes.size(); i++) {
-                if (checkCollision(player, fishes[i])) {
-                    if (player.size >= fishes[i].size) {
-                        player.size += fishes[i].size * 0.2f;
-                        fishes[i] = fishes.back();
-                        fishes.pop_back();
+            for (int i = 0; i < fish.size(); i++) {
+                if (checkCollision(player, fish[i])) {
+                    if (player.size >= fish[i].size) {
+                        player.size += fish[i].size *0.2f;
+                        fish[i] = fish.back();
+                        fish.pop_back();
                     }
                     else {
                         cout << "GAME OVER!" << endl;
@@ -185,7 +203,7 @@ int main(int argc, char* argv[])
             SDL_RenderFillRect(renderer, &pRect);
 
             // Ryby
-            for (auto& f : fishes) {
+            for (auto& f : fish) {
                 if (f.size <= player.size)
                     SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
                 else
