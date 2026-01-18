@@ -21,6 +21,7 @@ struct Fish {
     float x, y;
     float size;
     float speed;
+    float mass;
     bool isPlayer;
 };
 
@@ -68,15 +69,16 @@ int main(int argc, char* argv[])
     // ================================
     // GRACZ I RYBY
     // ================================
-    Fish player{ SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 30, 5, true };
+    Fish player{ SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 30, 5, 5, true };
 
     vector<Fish> fish;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 20; i++) {
         fish.push_back({
             float(rand() % SCREEN_WIDTH),
             float(rand() % SCREEN_HEIGHT),
             float(20),
-            float(2),
+            float(1.5),
+            float(1),
             false
             });
     }
@@ -85,7 +87,8 @@ int main(int argc, char* argv[])
             float(rand() % SCREEN_WIDTH),
             float(rand() % SCREEN_HEIGHT),
             float(40),
-            float(3),
+            float(1.5),
+			float(8),
             false
             });
     }
@@ -157,6 +160,8 @@ int main(int argc, char* argv[])
 
                     }
 
+                
+
 
                 f.x = max(f.size / 2,
                     min(f.x, SCREEN_WIDTH - f.size / 2));
@@ -168,7 +173,7 @@ int main(int argc, char* argv[])
             for (int i = 0; i < fish.size(); i++) {
                 if (checkCollision(player, fish[i])) {
                     if (player.size >= fish[i].size) {
-                        player.size += fish[i].size *0.2f;
+                        player.size += fish[i].mass/2 ;
                         fish[i] = fish.back();
                         fish.pop_back();
                     }
