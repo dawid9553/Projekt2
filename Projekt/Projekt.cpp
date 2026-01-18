@@ -92,6 +92,17 @@ int main(int argc, char* argv[])
             false
             });
     }
+	// Zielone kwadraty (duże, wolne, lecą po skosie)
+	for (int i = 0; i < 8; i++) {
+    fish.push_back({
+        float(SCREEN_WIDTH - 50),   // start w prawym dolnym rogu
+        float(SCREEN_HEIGHT - 50),
+        float(60),                  // większe od czerwonych
+        float(1.5f),                // wolniejsze
+        false
+    });
+}
+
 
     // Przycisk START
     SDL_Rect startBtn = { SCREEN_WIDTH/2-100, SCREEN_HEIGHT/2-40, 200, 80 };
@@ -159,6 +170,18 @@ int main(int argc, char* argv[])
                         f.y += 1 * f.speed;
 
                     }
+				    else if (f.size == 60) {
+        // Lecą z prawego dolnego do lewego górnego
+        f.x -= f.speed;
+        f.y -= f.speed;
+
+        // Jeśli wyjdą poza ekran — wracają na start
+        if (f.x < f.size/2 || f.y < f.size/2) {
+            f.x = SCREEN_WIDTH - f.size/2;
+            f.y = SCREEN_HEIGHT - f.size/2;
+        }
+    }
+
 
                 
 
@@ -212,10 +235,23 @@ int main(int argc, char* argv[])
 
             // Ryby
             for (auto& f : fish) {
-                if (f.size <= player.size)
-                    SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-                else
-                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                // Kolor zależny od typu + żółty jeśli jadalny
+if (f.size <= player.size) {
+    // Jadalne → żółte
+    SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+}
+else {
+    // Niejadalne → kolor zależny od typu
+    if (f.size == 20) {
+        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // małe żółte
+    }
+    else if (f.size == 40) {
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);   // czerwone
+    }
+    else if (f.size == 60) {
+        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);   // niebieskie
+    }
+}
 
                 SDL_Rect rect = {
                     int(f.x - f.size / 2),
