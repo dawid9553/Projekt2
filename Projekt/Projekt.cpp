@@ -149,10 +149,13 @@ int main(int argc, char* argv[])
 					f.x += 2 * f.speed;
                         
                 }
-                else {
-                    f.y -= (rand() % 3 - 1) * f.speed;
+                else if(f.size== 40){
+                        if (f.y == SCREEN_HEIGHT - f.size / 2)
+                            f.y = f.size / 2;
 
-                }
+                        f.y += 1 * f.speed;
+
+                    }
 
 
                 f.x = max(f.size / 2,
