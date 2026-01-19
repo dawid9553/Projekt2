@@ -49,6 +49,41 @@ bool checkBoosterCollision(const Fish& p, const Booster& b) {
 }
 
 // ================================
+// RYSOWANIE ZAOKRĄGLONYCH PRZYCISKÓW
+// ================================
+void drawRoundedButton(SDL_Renderer* r, SDL_Rect rect, SDL_Color top, SDL_Color bottom, int radius)
+{
+    // Gradient pionowy
+    for (int y = 0; y < rect.h; y++) {
+        float t = float(y) / rect.h;
+        Uint8 R = top.r + t * (bottom.r - top.r);
+        Uint8 G = top.g + t * (bottom.g - top.g);
+        Uint8 B = top.b + t * (bottom.b - top.b);
+
+        SDL_SetRenderDrawColor(r, R, G, B, 255);
+
+        int x1 = rect.x;
+        int x2 = rect.x + rect.w;
+
+        // Zaokrąglenia
+        if (y < radius) {
+            int dx = radius - y;
+            int cut = int(sqrt(radius * radius - dx * dx));
+            x1 += cut;
+            x2 -= cut;
+        }
+        if (y > rect.h - radius) {
+            int dy = y - (rect.h - radius);
+            int cut = int(sqrt(radius * radius - dy * dy));
+            x1 += cut;
+            x2 -= cut;
+        }
+
+        SDL_RenderDrawLine(r, x1, rect.y + y, x2, rect.y + y);
+    }
+}
+
+// ================================
 // STANY GRY
 // ================================
 enum GameState {
@@ -124,11 +159,14 @@ int main(int argc, char* argv[])
     // ================================
     // PRZYCISKI MENU
     // ================================
-    SDL_Rect startBtn = { SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 40, 200, 80 };
-    SDL_Rect controlBtn = { SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 + 60, 200, 60 };
+    SDL_Rect startBtn = { SCREEN_WIDTH / 2 - 120, SCREEN_HEIGHT / 2 - 60, 240, 80 };
+    SDL_Rect controlBtn = { SCREEN_WIDTH / 2 - 120, SCREEN_HEIGHT / 2 + 50, 240, 70 };
 
     bool running = true;
     SDL_Event event;
+
+    float boosterPulse = 0.0f;
+    float boosterAngle = 0.0f;
 
     // ================================
     // PĘTLA GRY
@@ -200,6 +238,10 @@ int main(int argc, char* argv[])
                 boosterOwned = true;
             }
 
+            // Booster animacja
+            boosterPulse += 0.1f;
+            boosterAngle += 0.05f;
+
             // Ruch ryb
             for (auto& f : fish) {
 
@@ -268,17 +310,23 @@ int main(int argc, char* argv[])
             SDL_SetRenderDrawColor(renderer, 0, 100, 200, 255);
             SDL_RenderClear(renderer);
 
-            // START
-            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-            SDL_RenderFillRect(renderer, &startBtn);
+            // START BUTTON
+            drawRoundedButton(renderer, startBtn,
+                { 0, 255, 0, 255 },
+                { 0, 180, 0, 255 },
+                20);
 
-            // PRZYCISK ZMIANY STEROWANIA
+            // CONTROL BUTTON
             if (useWASD)
-                SDL_SetRenderDrawColor(renderer, 255, 200, 0, 255); // żółty = WASD
+                drawRoundedButton(renderer, controlBtn,
+                    { 255, 200, 0, 255 },
+                    { 200, 150, 0, 255 },
+                    20);
             else
-                SDL_SetRenderDrawColor(renderer, 0, 200, 255, 255); // niebieski = strzałki
-
-            SDL_RenderFillRect(renderer, &controlBtn);
+                drawRoundedButton(renderer, controlBtn,
+                    { 0, 200, 255, 255 },
+                    { 0, 150, 200, 255 },
+                    20);
         }
         else {
 
@@ -292,7 +340,7 @@ int main(int argc, char* argv[])
             };
             SDL_RenderFillRect(renderer, &pRect);
 
-            // Fioletowa ramka boostera
+            // Fioletowa ramka boostera (jak wcześniej)
             if (boosterOwned) {
                 SDL_SetRenderDrawColor(renderer, 200, 0, 255, 255);
                 for (int i = 0; i < 6; i++) {
@@ -306,13 +354,29 @@ int main(int argc, char* argv[])
                 }
             }
 
-            // Booster
+            // Booster — pulsowanie + obracająca się aura
             if (booster.active) {
+
+                float pulse = 2.0f + sin(boosterPulse) * 3.0f;
+                float radius = booster.radius + pulse;
+
+                // Aura — obrót matematyczny
+                SDL_SetRenderDrawColor(renderer, 200, 0, 255, 120);
+                for (int i = 0; i < 360; i += 20) {
+                    float angle = i * 3.14159f / 180.0f + boosterAngle;
+                    float x = booster.x + cos(angle) * (radius + 10);
+                    float y = booster.y + sin(angle) * (radius + 10);
+                    SDL_RenderDrawPoint(renderer, int(x), int(y));
+                }
+
+                // Właściwe koło boostera
                 SDL_SetRenderDrawColor(renderer, 180, 0, 255, 255);
-                for (int w = -int(booster.radius); w <= int(booster.radius); w++) {
-                    for (int h = -int(booster.radius); h <= int(booster.radius); h++) {
-                        if (w * w + h * h <= int(booster.radius * booster.radius)) {
-                            SDL_RenderDrawPoint(renderer, int(booster.x + w), int(booster.y + h));
+                for (int w = -int(radius); w <= int(radius); w++) {
+                    for (int h = -int(radius); h <= int(radius); h++) {
+                        if (w * w + h * h <= int(radius * radius)) {
+                            SDL_RenderDrawPoint(renderer,
+                                int(booster.x + w),
+                                int(booster.y + h));
                         }
                     }
                 }
