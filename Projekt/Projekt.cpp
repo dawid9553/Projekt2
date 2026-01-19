@@ -103,16 +103,34 @@ int main(int argc, char* argv[])
             });
     }
 	// Niebieskie kwadraty (duże, wolne, lecą po skosie)
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 15; i++) {
+
+    float x, y;
+    float safeDistance = 200.0f; // minimalna odległość od gracza
+    bool ok = false;
+
+    while (!ok) {
+        x = SCREEN_WIDTH - 50 - (rand() % 600);
+        y = SCREEN_HEIGHT - 50 - (rand() % 600);
+
+        float dx = x - player.x;
+        float dy = y - player.y;
+        float dist = sqrt(dx*dx + dy*dy);
+
+        if (dist > safeDistance) {
+            ok = true;
+        }
+    }
+
     fish.push_back({
-        float(SCREEN_WIDTH - 50),   // start w prawym dolnym rogu
-        float(SCREEN_HEIGHT - 50),
-        float(60),                  // większe od czerwonych
-        float(1.5f),  				// wolniejsze
-        float(12),
-		false
+        x, y,
+        60,
+        1.5f,
+        12,
+        false
     });
 }
+
 // BOOSTER
 Booster booster{
     float(50 + rand() % (SCREEN_WIDTH - 100)),
@@ -197,16 +215,14 @@ bool boosterOwned = false;    // gracz ma boostera „w kieszeni”
 
                     }
 				    else if (f.size == 60) {
-        // Lecą z prawego dolnego do lewego górnego
-        f.x -= f.speed;
-        f.y -= f.speed;
+    f.x -= f.speed;
+    f.y += (rand() % 3 - 1) * f.speed; // losowy ruch góra/dół
 
-        // Jeśli wyjdą poza ekran — wracają na start
-        if (f.x < f.size/2 || f.y < f.size/2) {
-            f.x = SCREEN_WIDTH - f.size/2;
-            f.y = SCREEN_HEIGHT - f.size/2;
-        }
+    if (f.x < f.size / 2 || f.y < f.size / 2 || f.y > SCREEN_HEIGHT - f.size / 2) {
+        f.x = SCREEN_WIDTH - f.size / 2;
+        f.y = float(rand() % SCREEN_HEIGHT);
     }
+}
 
 
                 
