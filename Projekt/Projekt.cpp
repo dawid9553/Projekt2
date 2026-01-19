@@ -292,6 +292,20 @@ int main(int argc, char* argv[])
             };
             SDL_RenderFillRect(renderer, &pRect);
 
+            // Fioletowa ramka boostera
+            if (boosterOwned) {
+                SDL_SetRenderDrawColor(renderer, 200, 0, 255, 255);
+                for (int i = 0; i < 6; i++) {
+                    SDL_Rect shieldRect = {
+                        int(player.x - player.size - i),
+                        int(player.y - player.size - i),
+                        int(player.size * 2 + i * 2),
+                        int(player.size * 2 + i * 2)
+                    };
+                    SDL_RenderDrawRect(renderer, &shieldRect);
+                }
+            }
+
             // Booster
             if (booster.active) {
                 SDL_SetRenderDrawColor(renderer, 180, 0, 255, 255);
