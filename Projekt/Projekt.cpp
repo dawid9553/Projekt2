@@ -53,7 +53,6 @@ bool checkBoosterCollision(const Fish& p, const Booster& b) {
 // ================================
 void drawRoundedButton(SDL_Renderer* r, SDL_Rect rect, SDL_Color top, SDL_Color bottom, int radius)
 {
-    // Gradient pionowy
     for (int y = 0; y < rect.h; y++) {
         float t = float(y) / rect.h;
         Uint8 R = top.r + t * (bottom.r - top.r);
@@ -65,7 +64,6 @@ void drawRoundedButton(SDL_Renderer* r, SDL_Rect rect, SDL_Color top, SDL_Color 
         int x1 = rect.x;
         int x2 = rect.x + rect.w;
 
-        // Zaokrąglenia
         if (y < radius) {
             int dx = radius - y;
             int cut = int(sqrt(radius * radius - dx * dx));
@@ -80,6 +78,194 @@ void drawRoundedButton(SDL_Renderer* r, SDL_Rect rect, SDL_Color top, SDL_Color 
         }
 
         SDL_RenderDrawLine(r, x1, rect.y + y, x2, rect.y + y);
+    }
+}
+
+// ================================
+// PROSTY FONT BITMAPOWY (5x7)
+// ================================
+void drawChar(SDL_Renderer* r, char c, int x, int y, int scale)
+{
+    // 5x7 bitmapa, 1 = piksel, 0 = brak
+    // tylko potrzebne litery: S,T,A,R,W,D,O,L,E,C,N
+    static const int W = 5;
+    static const int H = 7;
+    int bitmap[H][W] = { 0 };
+
+    switch (c) {
+    case 'S': {
+        int tmp[7][5] = {
+            {1,1,1,1,1},
+            {1,0,0,0,0},
+            {1,0,0,0,0},
+            {1,1,1,1,1},
+            {0,0,0,0,1},
+            {0,0,0,0,1},
+            {1,1,1,1,1}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case 'T': {
+        int tmp[7][5] = {
+            {1,1,1,1,1},
+            {0,0,1,0,0},
+            {0,0,1,0,0},
+            {0,0,1,0,0},
+            {0,0,1,0,0},
+            {0,0,1,0,0},
+            {0,0,1,0,0}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case 'A': {
+        int tmp[7][5] = {
+            {0,1,1,1,0},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,1,1,1,1},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,0,0,0,1}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case 'R': {
+        int tmp[7][5] = {
+            {1,1,1,1,0},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,1,1,1,0},
+            {1,0,1,0,0},
+            {1,0,0,1,0},
+            {1,0,0,0,1}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case 'W': {
+        int tmp[7][5] = {
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,0,1,0,1},
+            {1,0,1,0,1},
+            {1,1,0,1,1},
+            {1,0,0,0,1}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case 'D': {
+        int tmp[7][5] = {
+            {1,1,1,0,0},
+            {1,0,0,1,0},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,0,0,1,0},
+            {1,1,1,0,0}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case 'O': {
+        int tmp[7][5] = {
+            {0,1,1,1,0},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {0,1,1,1,0}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case 'L': {
+        int tmp[7][5] = {
+            {1,0,0,0,0},
+            {1,0,0,0,0},
+            {1,0,0,0,0},
+            {1,0,0,0,0},
+            {1,0,0,0,0},
+            {1,0,0,0,0},
+            {1,1,1,1,1}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case 'E': {
+        int tmp[7][5] = {
+            {1,1,1,1,1},
+            {1,0,0,0,0},
+            {1,0,0,0,0},
+            {1,1,1,1,0},
+            {1,0,0,0,0},
+            {1,0,0,0,0},
+            {1,1,1,1,1}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case 'C': {
+        int tmp[7][5] = {
+            {0,1,1,1,1},
+            {1,0,0,0,0},
+            {1,0,0,0,0},
+            {1,0,0,0,0},
+            {1,0,0,0,0},
+            {1,0,0,0,0},
+            {0,1,1,1,1}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case 'N': {
+        int tmp[7][5] = {
+            {1,0,0,0,1},
+            {1,1,0,0,1},
+            {1,0,1,0,1},
+            {1,0,0,1,1},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,0,0,0,1}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    default:
+        return;
+    }
+
+    SDL_SetRenderDrawColor(r, 255, 255, 255, 255);
+    for (int j = 0; j < H; j++) {
+        for (int i = 0; i < W; i++) {
+            if (bitmap[j][i]) {
+                SDL_Rect px = {
+                    x + i * scale,
+                    y + j * scale,
+                    scale,
+                    scale
+                };
+                SDL_RenderFillRect(r, &px);
+            }
+        }
+    }
+}
+
+void drawText(SDL_Renderer* r, const string& text, int x, int y, int scale)
+{
+    int cursorX = x;
+    for (char c : text) {
+        if (c == ' ') {
+            cursorX += 3 * scale;
+            continue;
+        }
+        drawChar(r, c, cursorX, y, scale);
+        cursorX += 6 * scale;
     }
 }
 
@@ -178,7 +364,6 @@ int main(int argc, char* argv[])
             if (event.type == SDL_QUIT)
                 running = false;
 
-            // Klawiatura
             if (event.type == SDL_KEYDOWN) {
 
                 if (gameState == MENU && event.key.keysym.scancode == SDL_SCANCODE_RETURN)
@@ -188,19 +373,16 @@ int main(int argc, char* argv[])
                     running = false;
             }
 
-            // Kliknięcia w MENU
             if (event.type == SDL_MOUSEBUTTONDOWN && gameState == MENU) {
 
                 int mx = event.button.x;
                 int my = event.button.y;
 
-                // START
                 if (mx >= startBtn.x && mx <= startBtn.x + startBtn.w &&
                     my >= startBtn.y && my <= startBtn.y + startBtn.h) {
                     gameState = GAME;
                 }
 
-                // ZMIANA STEROWANIA
                 if (mx >= controlBtn.x && mx <= controlBtn.x + controlBtn.w &&
                     my >= controlBtn.y && my <= controlBtn.y + controlBtn.h) {
                     useWASD = !useWASD;
@@ -208,9 +390,6 @@ int main(int argc, char* argv[])
             }
         }
 
-        // ================================
-        // LOGIKA GRY
-        // ================================
         if (gameState == GAME) {
 
             const Uint8* state = SDL_GetKeyboardState(NULL);
@@ -228,21 +407,17 @@ int main(int argc, char* argv[])
                 if (state[SDL_SCANCODE_RIGHT]) player.x += player.speed;
             }
 
-            // Granice gracza
             player.x = max(player.size / 2, min(player.x, SCREEN_WIDTH - player.size / 2));
             player.y = max(player.size / 2, min(player.y, SCREEN_HEIGHT - player.size / 2));
 
-            // Booster
             if (booster.active && checkBoosterCollision(player, booster)) {
                 booster.active = false;
                 boosterOwned = true;
             }
 
-            // Booster animacja
             boosterPulse += 0.1f;
             boosterAngle += 0.05f;
 
-            // Ruch ryb
             for (auto& f : fish) {
 
                 if (f.size == 20) {
@@ -269,14 +444,12 @@ int main(int argc, char* argv[])
                 f.y = max(f.size / 2, min(f.y, SCREEN_HEIGHT - f.size / 2));
             }
 
-            // Respawn boostera
             if (!booster.active && !boosterOwned && rand() % 600 == 0) {
                 booster.x = 50 + rand() % (SCREEN_WIDTH - 100);
                 booster.y = 50 + rand() % (SCREEN_HEIGHT - 100);
                 booster.active = true;
             }
 
-            // Kolizje
             for (int i = 0; i < (int)fish.size(); i++) {
                 if (checkCollision(player, fish[i])) {
 
@@ -299,9 +472,6 @@ int main(int argc, char* argv[])
             }
         }
 
-        // ================================
-        // RENDER
-        // ================================
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
@@ -310,13 +480,11 @@ int main(int argc, char* argv[])
             SDL_SetRenderDrawColor(renderer, 0, 100, 200, 255);
             SDL_RenderClear(renderer);
 
-            // START BUTTON
             drawRoundedButton(renderer, startBtn,
                 { 0, 255, 0, 255 },
                 { 0, 180, 0, 255 },
                 20);
 
-            // CONTROL BUTTON
             if (useWASD)
                 drawRoundedButton(renderer, controlBtn,
                     { 255, 200, 0, 255 },
@@ -327,10 +495,20 @@ int main(int argc, char* argv[])
                     { 0, 200, 255, 255 },
                     { 0, 150, 200, 255 },
                     20);
+
+            // Napisy na przyciskach
+            drawText(renderer, "START", startBtn.x + 60, startBtn.y + 25, 3);
+
+            if (useWASD)
+                drawText(renderer, "WASD", controlBtn.x + 70, controlBtn.y + 22, 3);
+            else
+                drawText(renderer, "ARROWS", controlBtn.x + 40, controlBtn.y + 22, 3);
         }
         else {
 
-            // Gracz
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            SDL_RenderClear(renderer);
+
             SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
             SDL_Rect pRect = {
                 int(player.x - player.size / 2),
@@ -340,7 +518,6 @@ int main(int argc, char* argv[])
             };
             SDL_RenderFillRect(renderer, &pRect);
 
-            // Fioletowa ramka boostera (jak wcześniej)
             if (boosterOwned) {
                 SDL_SetRenderDrawColor(renderer, 200, 0, 255, 255);
                 for (int i = 0; i < 6; i++) {
@@ -354,13 +531,11 @@ int main(int argc, char* argv[])
                 }
             }
 
-            // Booster — pulsowanie + obracająca się aura
             if (booster.active) {
 
                 float pulse = 2.0f + sin(boosterPulse) * 3.0f;
                 float radius = booster.radius + pulse;
 
-                // Aura — obrót matematyczny
                 SDL_SetRenderDrawColor(renderer, 200, 0, 255, 120);
                 for (int i = 0; i < 360; i += 20) {
                     float angle = i * 3.14159f / 180.0f + boosterAngle;
@@ -369,7 +544,6 @@ int main(int argc, char* argv[])
                     SDL_RenderDrawPoint(renderer, int(x), int(y));
                 }
 
-                // Właściwe koło boostera
                 SDL_SetRenderDrawColor(renderer, 180, 0, 255, 255);
                 for (int w = -int(radius); w <= int(radius); w++) {
                     for (int h = -int(radius); h <= int(radius); h++) {
@@ -382,7 +556,6 @@ int main(int argc, char* argv[])
                 }
             }
 
-            // Ryby
             for (auto& f : fish) {
 
                 if (f.size <= player.size)
