@@ -24,7 +24,11 @@ struct Fish {
     float mass;
     bool isPlayer;
 };
-
+struct Booster {
+    float x, y;
+    float radius;   // promień widocznego koła
+    bool active;
+};
 // ================================
 // 3. KOLIZJE
 // ================================
@@ -33,6 +37,12 @@ bool checkCollision(const Fish& a, const Fish& b) {
     float dy = a.y - b.y;
     float distance = sqrt(dx * dx + dy * dy);
     return distance < (a.size / 2 + b.size / 2);
+}
+bool checkBoosterCollision(const Fish& p, const Booster& b) {
+    float dx = p.x - b.x;
+    float dy = p.y - b.y;
+    float dist = sqrt(dx * dx + dy * dy);
+    return dist < (p.size / 2 + b.radius);
 }
 
 // ================================
@@ -92,16 +102,27 @@ int main(int argc, char* argv[])
             false
             });
     }
-	// Zielone kwadraty (duże, wolne, lecą po skosie)
+	// Niebieskie kwadraty (duże, wolne, lecą po skosie)
 	for (int i = 0; i < 8; i++) {
     fish.push_back({
         float(SCREEN_WIDTH - 50),   // start w prawym dolnym rogu
         float(SCREEN_HEIGHT - 50),
         float(60),                  // większe od czerwonych
-        float(1.5f),                // wolniejsze
-        false
+        float(1.5f),  				// wolniejsze
+        float(12),
+		false
     });
 }
+// BOOSTER
+Booster booster{
+    float(50 + rand() % (SCREEN_WIDTH - 100)),
+    float(50 + rand() % (SCREEN_HEIGHT - 100)),
+    20.0f,
+    true          // leży na mapie
+};
+
+bool boosterOwned = false;    // gracz ma boostera „w kieszeni”
+
 
 
     // Przycisk START
@@ -154,6 +175,11 @@ int main(int argc, char* argv[])
                 min(player.x, SCREEN_WIDTH - player.size / 2));
             player.y = max(player.size / 2,
                 min(player.y, SCREEN_HEIGHT - player.size / 2));
+			  // Booster – zbieranie
+  			if (booster.active && checkBoosterCollision(player, booster)) {
+      			booster.active = false;   // znika z mapy
+      			boosterOwned = true;      // gracz ma boostera
+  			}
             // Ruch ryb + granice
             for (auto& f : fish) {
                 if (f.size == 20) {
@@ -191,14 +217,25 @@ int main(int argc, char* argv[])
                 f.y = max(f.size / 2,
                     min(f.y, SCREEN_HEIGHT - f.size / 2));
             }
+			  // Losowy respawn boostera – tylko jeśli gracz NIE ma boostera
+  if (!booster.active && !boosterOwned && rand() % 600 == 0) {
+      booster.x = 50 + rand() % (SCREEN_WIDTH - 100);
+      booster.y = 50 + rand() % (SCREEN_HEIGHT - 100);
+      booster.active = true;
+  }
 
             // Kolizje
-            for (int i = 0; i < fish.size(); i++) {
+            for (int i = 0; i < (int)fish.size(); i++) {
                 if (checkCollision(player, fish[i])) {
                     if (player.size >= fish[i].size) {
-                        player.size += fish[i].mass/2 ;
+                        player.size += fish[i].mass / 2;
                         fish[i] = fish.back();
                         fish.pop_back();
+                    }
+                    else if (boosterOwned) {
+                        fish[i] = fish.back();
+                        fish.pop_back();
+                        boosterOwned = false;
                     }
                     else {
                         cout << "GAME OVER!" << endl;
@@ -232,7 +269,34 @@ int main(int argc, char* argv[])
                 int(player.size)
             };
             SDL_RenderFillRect(renderer, &pRect);
+			 // Obramówka boostera (fioletowa, gruba)
+ if (boosterOwned) {
 
+     SDL_SetRenderDrawColor(renderer, 200, 0, 255, 255);
+     for (int i = 0; i < 6; i++) {
+         SDL_Rect shieldRect = {
+             int(player.x - player.size - i),
+             int(player.y - player.size - i),
+             int(player.size * 2 + i * 2),
+             int(player.size * 2 + i * 2)
+         };
+         SDL_RenderDrawRect(renderer, &shieldRect);
+     }
+ }
+
+ // Booster – fioletowe koło
+ if (booster.active) {
+     SDL_SetRenderDrawColor(renderer, 180, 0, 255, 255);
+     for (int w = -int(booster.radius); w <= int(booster.radius); w++) {
+         for (int h = -int(booster.radius); h <= int(booster.radius); h++) {
+             if (w * w + h * h <= int(booster.radius * booster.radius)) {
+                 SDL_RenderDrawPoint(renderer,
+                     int(booster.x + w),
+                     int(booster.y + h));
+             }
+         }
+     }
+ }
             // Ryby
             for (auto& f : fish) {
                 // Kolor zależny od typu + żółty jeśli jadalny
