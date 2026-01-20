@@ -223,6 +223,32 @@ void drawChar(SDL_Renderer* r, char c, int x, int y, int scale)
         memcpy(bitmap, tmp, sizeof(bitmap));
         break;
     }
+        case 'I': {
+    int tmp[7][5] = {
+        {1,1,1,1,1},
+        {0,0,1,0,0},
+        {0,0,1,0,0},
+        {0,0,1,0,0},
+        {0,0,1,0,0},
+        {0,0,1,0,0},
+        {1,1,1,1,1}
+    };
+    memcpy(bitmap, tmp, sizeof(bitmap));
+    break;
+}
+case 'G': {
+    int tmp[7][5] = {
+        {0,1,1,1,1},
+        {1,0,0,0,0},
+        {1,0,0,0,0},
+        {1,0,1,1,1},
+        {1,0,0,0,1},
+        {1,0,0,0,1},
+        {0,1,1,1,1}
+    };
+    memcpy(bitmap, tmp, sizeof(bitmap));
+    break;
+}
     case 'N': {
         int tmp[7][5] = {
             {1,0,0,0,1},
@@ -288,6 +314,7 @@ int getTextWidth(const string& text, int scale) {
 // ================================
 enum GameState {
     MENU,
+    SETTINGS,
     GAME
 };
 
@@ -359,8 +386,10 @@ int main(int argc, char* argv[])
     // ================================
     // PRZYCISKI MENU
     // ================================
-    SDL_Rect startBtn = { SCREEN_WIDTH / 2 - 120, SCREEN_HEIGHT / 2 - 60, 240, 80 };
-    SDL_Rect controlBtn = { SCREEN_WIDTH / 2 - 120, SCREEN_HEIGHT / 2 + 50, 240, 70 };
+    SDL_Rect startBtn = { SCREEN_WIDTH / 2 - 120, SCREEN_HEIGHT / 2 - 60, 240, 70 };
+    SDL_Rect controlBtn = { SCREEN_WIDTH / 2 - 120, SCREEN_HEIGHT / 2 + 100, 240, 70 };
+    SDL_Rect wasdBtn = { SCREEN_WIDTH / 2 - 120, SCREEN_HEIGHT / 2 - 60, 240, 70 };
+    SDL_Rect arrowsBtn = { SCREEN_WIDTH / 2 - 120, SCREEN_HEIGHT / 2 + 20, 240, 70 };
 
     bool running = true;
     SDL_Event event;
@@ -397,12 +426,32 @@ int main(int argc, char* argv[])
                     gameState = GAME;
                 }
 
-                if (mx >= controlBtn.x && mx <= controlBtn.x + controlBtn.w &&
-                    my >= controlBtn.y && my <= controlBtn.y + controlBtn.h) {
-                    useWASD = !useWASD;
-                }
-            }
+                        if (mx >= controlBtn.x && mx <= controlBtn.x + controlBtn.w &&
+            my >= controlBtn.y && my <= controlBtn.y + controlBtn.h) {
+            gameState = SETTINGS;
         }
+    }
+    if (event.type == SDL_MOUSEBUTTONDOWN && gameState == SETTINGS) {
+
+        int mx = event.button.x;
+        int my = event.button.y;
+
+        // WASD button
+        if (mx >= wasdBtn.x && mx <= wasdBtn.x + wasdBtn.w &&
+            my >= wasdBtn.y && my <= wasdBtn.y + wasdBtn.h) {
+            useWASD = true;
+            gameState = MENU;
+        }
+
+        // ARROWS button
+        if (mx >= arrowsBtn.x && mx <= arrowsBtn.x + arrowsBtn.w &&
+            my >= arrowsBtn.y && my <= arrowsBtn.y + arrowsBtn.h) {
+            useWASD = false;
+            gameState = MENU;
+        }
+    }
+
+}
 
         if (gameState == GAME) {
 
@@ -498,37 +547,48 @@ int main(int argc, char* argv[])
                 { 0, 255, 0, 255 },
                 { 0, 180, 0, 255 },
                 20);
+            drawRoundedButton(renderer, controlBtn,
+    { 0, 200, 255, 255 },
+    { 0, 150, 200, 255 },
+    20);
+            
+               // START text
+    int startTextWidth = getTextWidth("START", 3);
+    int startTextX = startBtn.x + (startBtn.w - startTextWidth) / 2;
+    drawText(renderer, "START", startTextX, startBtn.y + 25, 3);
 
-            if (useWASD)
-                drawRoundedButton(renderer, controlBtn,
-                    { 255, 200, 0, 255 },
-                    { 200, 150, 0, 255 },
-                    20);
-            else
-                drawRoundedButton(renderer, controlBtn,
-                    { 0, 200, 255, 255 },
-                    { 0, 150, 200, 255 },
-                    20);
+    // SETTINGS text
+    int settingsTextWidth = getTextWidth("SETTINGS", 3);
+    int settingsTextX = controlBtn.x + (controlBtn.w - settingsTextWidth) / 2;
+    drawText(renderer, "SETTINGS", settingsTextX, controlBtn.y + 22, 3);
 
-            // Napisy na przyciskach
-            // START button
-int startTextWidth = getTextWidth("START", 3);
-int startTextX = startBtn.x + (startBtn.w - startTextWidth) / 2;
-drawText(renderer, "START", startTextX, startBtn.y + 25, 3);
-
-// CONTROL button
-if (useWASD) {
-    int wasdTextWidth = getTextWidth("WASD", 3);
-    int wasdTextX = controlBtn.x + (controlBtn.w - wasdTextWidth) / 2;
-    drawText(renderer, "WASD", wasdTextX, controlBtn.y + 22, 3);
-} else {
-    int arrowsTextWidth = getTextWidth("ARROWS", 3);
-    int arrowsTextX = controlBtn.x + (controlBtn.w - arrowsTextWidth) / 2;
-    drawText(renderer, "ARROWS", arrowsTextX, controlBtn.y + 22, 3);
 }
 
-        }
-        else {
+else if (gameState == SETTINGS) {
+
+    SDL_SetRenderDrawColor(renderer, 0, 100, 200, 255);
+    SDL_RenderClear(renderer);
+
+    drawRoundedButton(renderer, wasdBtn,
+        { 255, 200, 0, 255 },
+        { 200, 150, 0, 255 },
+        20);
+
+    drawRoundedButton(renderer, arrowsBtn,
+        { 0, 200, 255, 255 },
+        { 0, 150, 200, 255 },
+        20);
+
+    int wasdTextWidth = getTextWidth("WASD", 3);
+    int wasdTextX = wasdBtn.x + (wasdBtn.w - wasdTextWidth) / 2;
+    drawText(renderer, "WASD", wasdTextX, wasdBtn.y + 22, 3);
+
+    int arrowsTextWidth = getTextWidth("ARROWS", 3);
+    int arrowsTextX = arrowsBtn.x + (arrowsBtn.w - arrowsTextWidth) / 2;
+    drawText(renderer, "ARROWS", arrowsTextX, arrowsBtn.y + 22, 3);
+} 
+else if (gameState == GAME)
+{
 
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
