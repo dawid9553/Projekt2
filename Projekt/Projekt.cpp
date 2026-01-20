@@ -398,7 +398,7 @@ int main(int argc, char* argv[])
     Fish player{ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 30, 5, 5, 5, true };
 
     vector<Fish> fish;
-    for (int i = 0; i < 10+(rand()%5); i++) {
+    for (int i = 0; i < 30 + (rand() % 20); i++) {
         fish.push_back({Fishtab[0]});
         fish[i].x = float(rand() % SCREEN_WIDTH);
         fish[i].y = float(rand() % SCREEN_HEIGHT);
@@ -588,12 +588,13 @@ int main(int argc, char* argv[])
             for (int i = 0; i < (int)fish.size(); i++) {
                 if (checkCollision(player, fish[i])) {
 
-                    if (player.mass >= fish[i].mass) {
-                        player.mass += fish[i].massgain;
-                        player.size += fish[i].massgain;
-                        fish[i] = fish.back();
-                        fish.pop_back();
-                    }
+                            if (player.size >= fish[i].size) {
+            player.mass += fish[i].massgain;
+            player.size += fish[i].massgain;
+            fish[i] = fish.back();
+            fish.pop_back();
+        }
+
                     else if (boosterOwned) {
                         fish[i] = fish.back();
                         fish.pop_back();
@@ -715,23 +716,32 @@ int main(int argc, char* argv[])
 
             for (auto& f : fish) {
 
-                if (f.mass <= player.mass)
-                    SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-                else if (f.mass == 10)
-                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-                else if (f.mass == 40)
-                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-                else
-                    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+    // jadalne, jeśli jesteś wizualnie większy lub równy
+    bool edible = (player.size >= f.size);
 
-                SDL_Rect rect = {
-                    int(f.x - f.size / 2),
-                    int(f.y - f.size / 2),
-                    int(f.size),
-                    int(f.size)
-                };
-                SDL_RenderFillRect(renderer, &rect);
-            }
+    if (f.move == "wave") {
+        // niebieskie zawsze niebieskie, ale dalej podlegają logice zjadania
+        if (edible)
+            SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // żółte jadalne 
+        else
+            SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);   // ciemny niebieski = groźny
+    }
+    else {
+        if (edible)
+            SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // żółte = jadalne
+        else
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);   // czerwone = groźne
+    }
+
+    SDL_Rect rect = {
+        int(f.x - f.size / 2),
+        int(f.y - f.size / 2),
+        int(f.size),
+        int(f.size)
+    };
+    SDL_RenderFillRect(renderer, &rect);
+}
+
         }
         else if (gameState == GAME_OVER)
         {
