@@ -269,6 +269,20 @@ void drawText(SDL_Renderer* r, const string& text, int x, int y, int scale)
     }
 }
 
+//dodatkowa funkcja do obliczania szerokosci tekstu
+int getTextWidth(const string& text, int scale) {
+    int width = 0;
+    for (char c : text) {
+        if (c == ' ') {
+            width += 3 * scale;
+        }
+        else {
+            width += 6 * scale;
+        }
+    }
+    return width;
+}
+
 // ================================
 // STANY GRY
 // ================================
@@ -497,12 +511,22 @@ int main(int argc, char* argv[])
                     20);
 
             // Napisy na przyciskach
-            drawText(renderer, "START", startBtn.x + 60, startBtn.y + 25, 3);
+            // START button
+int startTextWidth = getTextWidth("START", 3);
+int startTextX = startBtn.x + (startBtn.w - startTextWidth) / 2;
+drawText(renderer, "START", startTextX, startBtn.y + 25, 3);
 
-            if (useWASD)
-                drawText(renderer, "WASD", controlBtn.x + 70, controlBtn.y + 22, 3);
-            else
-                drawText(renderer, "ARROWS", controlBtn.x + 40, controlBtn.y + 22, 3);
+// CONTROL button
+if (useWASD) {
+    int wasdTextWidth = getTextWidth("WASD", 3);
+    int wasdTextX = controlBtn.x + (controlBtn.w - wasdTextWidth) / 2;
+    drawText(renderer, "WASD", wasdTextX, controlBtn.y + 22, 3);
+} else {
+    int arrowsTextWidth = getTextWidth("ARROWS", 3);
+    int arrowsTextX = controlBtn.x + (controlBtn.w - arrowsTextWidth) / 2;
+    drawText(renderer, "ARROWS", arrowsTextX, controlBtn.y + 22, 3);
+}
+
         }
         else {
 
