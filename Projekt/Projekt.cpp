@@ -22,7 +22,31 @@ struct Fish {
     float size;
     float speed;
     float mass;
+    float massgain;
     bool isPlayer;
+    string move; //zmienna uniwersalna do okreslania ruchow
+};
+
+
+//tablica rodzaji ryb
+struct Fish Fishtab[14] = {
+    {0,0,20,1.5,2,1,false,"horizontal"},
+    {0,0,40,1.5,10,5,false,"vertical"},
+    {0,0,50,1,50,10,false,"wave"},
+    {0,0,80,150,15,false,"horizontal"},
+    {0,0,100,250,20,false,"wave"},
+    {0,0,100,500,25,false,"wave"},
+    {0,0,100,750,30,false,"horizontal"},
+    {0,0,100,1000,50,false,"vertical"},
+    {0,0,100,1500,75,false,"horizontal"},
+    {0,0,100,2500,100,false,"wave"},
+    {0,0,100,5000,150,false,"horizontal"},
+    {0,0,100,10000,200,false,"horizontal"},
+    {0,0,100,20000,250,false,"wave"},
+    {0,0,200,999999999999,0,false,"wave"},
+
+
+
 };
 
 struct Booster {
@@ -223,58 +247,58 @@ void drawChar(SDL_Renderer* r, char c, int x, int y, int scale)
         memcpy(bitmap, tmp, sizeof(bitmap));
         break;
     }
-        case 'I': {
-    int tmp[7][5] = {
-        {1,1,1,1,1},
-        {0,0,1,0,0},
-        {0,0,1,0,0},
-        {0,0,1,0,0},
-        {0,0,1,0,0},
-        {0,0,1,0,0},
-        {1,1,1,1,1}
-    };
-    memcpy(bitmap, tmp, sizeof(bitmap));
-    break;
-}
-case 'G': {
-    int tmp[7][5] = {
-        {0,1,1,1,1},
-        {1,0,0,0,0},
-        {1,0,0,0,0},
-        {1,0,1,1,1},
-        {1,0,0,0,1},
-        {1,0,0,0,1},
-        {0,1,1,1,1}
-    };
-    memcpy(bitmap, tmp, sizeof(bitmap));
-    break;
-}
-       case 'M': {
-    int tmp[7][5] = {
-        {1,0,0,0,1},
-        {1,1,0,1,1},
-        {1,0,1,0,1},
-        {1,0,1,0,1},
-        {1,0,0,0,1},
-        {1,0,0,0,1},
-        {1,0,0,0,1}
-    };
-    memcpy(bitmap, tmp, sizeof(bitmap));
-    break;
-}
- case 'V': {
-    int tmp[7][5] = {
-        {1,0,0,0,1},
-        {1,0,0,0,1},
-        {1,0,0,0,1},
-        {1,0,0,0,1},
-        {0,1,0,1,0},
-        {0,1,0,1,0},
-        {0,0,1,0,0}
-    };
-    memcpy(bitmap, tmp, sizeof(bitmap));
-    break;
-}
+    case 'I': {
+        int tmp[7][5] = {
+            {1,1,1,1,1},
+            {0,0,1,0,0},
+            {0,0,1,0,0},
+            {0,0,1,0,0},
+            {0,0,1,0,0},
+            {0,0,1,0,0},
+            {1,1,1,1,1}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case 'G': {
+        int tmp[7][5] = {
+            {0,1,1,1,1},
+            {1,0,0,0,0},
+            {1,0,0,0,0},
+            {1,0,1,1,1},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {0,1,1,1,1}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case 'M': {
+        int tmp[7][5] = {
+            {1,0,0,0,1},
+            {1,1,0,1,1},
+            {1,0,1,0,1},
+            {1,0,1,0,1},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,0,0,0,1}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case 'V': {
+        int tmp[7][5] = {
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {0,1,0,1,0},
+            {0,1,0,1,0},
+            {0,0,1,0,0}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
     case 'N': {
         int tmp[7][5] = {
             {1,0,0,0,1},
@@ -371,51 +395,50 @@ int main(int argc, char* argv[])
     // ================================
     // GRACZ I RYBY
     // ================================
-    Fish player{ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 30, 5, 5, true };
+    Fish player{ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 30, 5, 5, 5, true };
 
     vector<Fish> fish;
-    for (int i = 0; i < 20; i++) {
-        fish.push_back({ float(rand() % SCREEN_WIDTH), float(rand() % SCREEN_HEIGHT), 20, 1.5f, 1, false });
+    for (int i = 0; i < 10+(rand()%5); i++) {
+        fish.push_back({Fishtab[0]});
+        fish[i].x = float(rand() % SCREEN_WIDTH);
+        fish[i].y = float(rand() % SCREEN_HEIGHT);
     }
-    for (int i = 0; i < 10; i++) {
+//przerobiony kod, pod nowa tablice z rybami
+    for (int i = 0; i < 10+(rand() % 5); i++) {
+           fish.push_back({Fishtab[1]});
+               float x = fish.size() - 1;
+               float safeDistance = 150.0f ;   // czerwone nie mogą być zbyt blisko gracza
+               bool ok = false;
+        while (!ok) {
+           fish[x].x = float(rand() % SCREEN_WIDTH);
+           fish[x].y = float(rand() % SCREEN_HEIGHT);
 
-    float x, y;
-    float safeDistance = 150.0f;   // czerwone nie mogą być zbyt blisko gracza
-    bool ok = false;
+            float dx = fish[x].x - player.x;
+            float dy = fish[x].y - player.y;
+            float dist = sqrt(dx * dx + dy * dy);
 
-    while (!ok) {
-        x = float(rand() % SCREEN_WIDTH);
-        y = float(rand() % SCREEN_HEIGHT);
-
-        float dx = x - player.x;
-        float dy = y - player.y;
-        float dist = sqrt(dx * dx + dy * dy);
-
-        if (dist > safeDistance)
-            ok = true;
+            if (dist > safeDistance)
+                ok = true;
+        }
     }
 
-    fish.push_back({ x, y, 40, 1.5f, 8, false });
-}
-
-    for (int i = 0; i < 15; i++) {
-
-        float x, y;
+    for (int i = 0; i < 5+(rand()%10); i++) {
+        fish.push_back({ Fishtab[2] });
+        float x = fish.size() - 1;
         float safeDistance = 200.0f; //niebieskie nie moga byc blisko gracza
         bool ok = false;
 
         while (!ok) {
-            x = SCREEN_WIDTH - 50 - (rand() % 600);
-            y = SCREEN_HEIGHT - 50 - (rand() % 600);
+            fish[x].x = SCREEN_WIDTH - 50 - (rand() % 600);
+            fish[x].y = SCREEN_HEIGHT - 50 - (rand() % 600);
 
-            float dx = x - player.x;
-            float dy = y - player.y;
+            float dx = fish[x].x - player.x;
+            float dy = fish[x].y - player.y;
             float dist = sqrt(dx * dx + dy * dy);
 
             if (dist > safeDistance) ok = true;
         }
 
-        fish.push_back({ x, y, 60, 1.5f, 12, false });
     }
 
     // BOOSTER
@@ -471,32 +494,32 @@ int main(int argc, char* argv[])
                     gameState = GAME;
                 }
 
-                        if (mx >= controlBtn.x && mx <= controlBtn.x + controlBtn.w &&
-            my >= controlBtn.y && my <= controlBtn.y + controlBtn.h) {
-            gameState = SETTINGS;
+                if (mx >= controlBtn.x && mx <= controlBtn.x + controlBtn.w &&
+                    my >= controlBtn.y && my <= controlBtn.y + controlBtn.h) {
+                    gameState = SETTINGS;
+                }
+            }
+            if (event.type == SDL_MOUSEBUTTONDOWN && gameState == SETTINGS) {
+
+                int mx = event.button.x;
+                int my = event.button.y;
+
+                // WASD button
+                if (mx >= wasdBtn.x && mx <= wasdBtn.x + wasdBtn.w &&
+                    my >= wasdBtn.y && my <= wasdBtn.y + wasdBtn.h) {
+                    useWASD = true;
+                    gameState = MENU;
+                }
+
+                // ARROWS button
+                if (mx >= arrowsBtn.x && mx <= arrowsBtn.x + arrowsBtn.w &&
+                    my >= arrowsBtn.y && my <= arrowsBtn.y + arrowsBtn.h) {
+                    useWASD = false;
+                    gameState = MENU;
+                }
+            }
+
         }
-    }
-    if (event.type == SDL_MOUSEBUTTONDOWN && gameState == SETTINGS) {
-
-        int mx = event.button.x;
-        int my = event.button.y;
-
-        // WASD button
-        if (mx >= wasdBtn.x && mx <= wasdBtn.x + wasdBtn.w &&
-            my >= wasdBtn.y && my <= wasdBtn.y + wasdBtn.h) {
-            useWASD = true;
-            gameState = MENU;
-        }
-
-        // ARROWS button
-        if (mx >= arrowsBtn.x && mx <= arrowsBtn.x + arrowsBtn.w &&
-            my >= arrowsBtn.y && my <= arrowsBtn.y + arrowsBtn.h) {
-            useWASD = false;
-            gameState = MENU;
-        }
-    }
-
-}
 
         if (gameState == GAME) {
 
@@ -528,17 +551,21 @@ int main(int argc, char* argv[])
 
             for (auto& f : fish) {
 
-                if (f.size == 20) {
-                    if (f.x == SCREEN_WIDTH - f.size / 2)
+                if (f.move == "horizontal") {
+                    if (f.x == SCREEN_WIDTH - f.size / 2) {
                         f.x = f.size / 2;
+                        f.y = rand() % SCREEN_HEIGHT;
+                    }
                     f.x += 2 * f.speed;
                 }
-                else if (f.size == 40) {
-                    if (f.y == SCREEN_HEIGHT - f.size / 2)
+                else if (f.move == "vertical") {
+                    if (f.y == SCREEN_HEIGHT - f.size / 2) {
                         f.y = f.size / 2;
+                        f.x = rand() % SCREEN_WIDTH;
+                    }
                     f.y += 1 * f.speed;
                 }
-                else if (f.size == 60) {
+                else if (f.move == "wave") {
                     f.x -= f.speed;
                     f.y += (rand() % 3 - 1) * f.speed;
 
@@ -561,8 +588,9 @@ int main(int argc, char* argv[])
             for (int i = 0; i < (int)fish.size(); i++) {
                 if (checkCollision(player, fish[i])) {
 
-                    if (player.size >= fish[i].size) {
-                        player.size += fish[i].mass / 2;
+                    if (player.mass >= fish[i].mass) {
+                        player.mass += fish[i].massgain;
+                        player.size += fish[i].massgain;
                         fish[i] = fish.back();
                         fish.pop_back();
                     }
@@ -572,8 +600,8 @@ int main(int argc, char* argv[])
                         boosterOwned = false;
                     }
                     else {
-    gameState = GAME_OVER;
-}
+                        gameState = GAME_OVER;
+                    }
 
                     break;
                 }
@@ -593,47 +621,47 @@ int main(int argc, char* argv[])
                 { 0, 180, 0, 255 },
                 20);
             drawRoundedButton(renderer, controlBtn,
-    { 0, 200, 255, 255 },
-    { 0, 150, 200, 255 },
-    20);
-            
-               // START text
-    int startTextWidth = getTextWidth("START", 3);
-    int startTextX = startBtn.x + (startBtn.w - startTextWidth) / 2;
-    drawText(renderer, "START", startTextX, startBtn.y + 25, 3);
+                { 0, 200, 255, 255 },
+                { 0, 150, 200, 255 },
+                20);
 
-    // SETTINGS text
-    int settingsTextWidth = getTextWidth("SETTINGS", 3);
-    int settingsTextX = controlBtn.x + (controlBtn.w - settingsTextWidth) / 2;
-    drawText(renderer, "SETTINGS", settingsTextX, controlBtn.y + 22, 3);
+            // START text
+            int startTextWidth = getTextWidth("START", 3);
+            int startTextX = startBtn.x + (startBtn.w - startTextWidth) / 2;
+            drawText(renderer, "START", startTextX, startBtn.y + 25, 3);
 
-}
+            // SETTINGS text
+            int settingsTextWidth = getTextWidth("SETTINGS", 3);
+            int settingsTextX = controlBtn.x + (controlBtn.w - settingsTextWidth) / 2;
+            drawText(renderer, "SETTINGS", settingsTextX, controlBtn.y + 22, 3);
 
-else if (gameState == SETTINGS) {
+        }
 
-    SDL_SetRenderDrawColor(renderer, 0, 100, 200, 255);
-    SDL_RenderClear(renderer);
+        else if (gameState == SETTINGS) {
 
-    drawRoundedButton(renderer, wasdBtn,
-        { 255, 200, 0, 255 },
-        { 200, 150, 0, 255 },
-        20);
+            SDL_SetRenderDrawColor(renderer, 0, 100, 200, 255);
+            SDL_RenderClear(renderer);
 
-    drawRoundedButton(renderer, arrowsBtn,
-        { 0, 200, 255, 255 },
-        { 0, 150, 200, 255 },
-        20);
+            drawRoundedButton(renderer, wasdBtn,
+                { 255, 200, 0, 255 },
+                { 200, 150, 0, 255 },
+                20);
 
-    int wasdTextWidth = getTextWidth("WASD", 3);
-    int wasdTextX = wasdBtn.x + (wasdBtn.w - wasdTextWidth) / 2;
-    drawText(renderer, "WASD", wasdTextX, wasdBtn.y + 22, 3);
+            drawRoundedButton(renderer, arrowsBtn,
+                { 0, 200, 255, 255 },
+                { 0, 150, 200, 255 },
+                20);
 
-    int arrowsTextWidth = getTextWidth("ARROWS", 3);
-    int arrowsTextX = arrowsBtn.x + (arrowsBtn.w - arrowsTextWidth) / 2;
-    drawText(renderer, "ARROWS", arrowsTextX, arrowsBtn.y + 22, 3);
-} 
-else if (gameState == GAME)
-{
+            int wasdTextWidth = getTextWidth("WASD", 3);
+            int wasdTextX = wasdBtn.x + (wasdBtn.w - wasdTextWidth) / 2;
+            drawText(renderer, "WASD", wasdTextX, wasdBtn.y + 22, 3);
+
+            int arrowsTextWidth = getTextWidth("ARROWS", 3);
+            int arrowsTextX = arrowsBtn.x + (arrowsBtn.w - arrowsTextWidth) / 2;
+            drawText(renderer, "ARROWS", arrowsTextX, arrowsBtn.y + 22, 3);
+        }
+        else if (gameState == GAME)
+        {
 
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
@@ -687,11 +715,11 @@ else if (gameState == GAME)
 
             for (auto& f : fish) {
 
-                if (f.size <= player.size)
+                if (f.mass <= player.mass)
                     SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-                else if (f.size == 20)
-                    SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-                else if (f.size == 40)
+                else if (f.mass == 10)
+                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                else if (f.mass == 40)
                     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
                 else
                     SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
@@ -706,19 +734,19 @@ else if (gameState == GAME)
             }
         }
         else if (gameState == GAME_OVER)
-{
-    SDL_SetRenderDrawColor(renderer, 0, 100, 200, 255);
-    SDL_RenderClear(renderer);
+        {
+            SDL_SetRenderDrawColor(renderer, 0, 100, 200, 255);
+            SDL_RenderClear(renderer);
 
-    string msg = "GAME OVER";
-    int scale = 4;
-    int textWidth = getTextWidth(msg, scale);
+            string msg = "GAME OVER";
+            int scale = 4;
+            int textWidth = getTextWidth(msg, scale);
 
-    int x = (SCREEN_WIDTH - textWidth) / 2;
-    int y = SCREEN_HEIGHT / 2 - 50;
+            int x = (SCREEN_WIDTH - textWidth) / 2;
+            int y = SCREEN_HEIGHT / 2 - 50;
 
-    drawText(renderer, msg, x, y, scale);
-}
+            drawText(renderer, msg, x, y, scale);
+        }
 
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
