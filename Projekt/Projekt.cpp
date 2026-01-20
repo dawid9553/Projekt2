@@ -249,6 +249,32 @@ case 'G': {
     memcpy(bitmap, tmp, sizeof(bitmap));
     break;
 }
+       case 'M': {
+    int tmp[7][5] = {
+        {1,0,0,0,1},
+        {1,1,0,1,1},
+        {1,0,1,0,1},
+        {1,0,1,0,1},
+        {1,0,0,0,1},
+        {1,0,0,0,1},
+        {1,0,0,0,1}
+    };
+    memcpy(bitmap, tmp, sizeof(bitmap));
+    break;
+}
+ case 'V': {
+    int tmp[7][5] = {
+        {1,0,0,0,1},
+        {1,0,0,0,1},
+        {1,0,0,0,1},
+        {1,0,0,0,1},
+        {0,1,0,1,0},
+        {0,1,0,1,0},
+        {0,0,1,0,0}
+    };
+    memcpy(bitmap, tmp, sizeof(bitmap));
+    break;
+}
     case 'N': {
         int tmp[7][5] = {
             {1,0,0,0,1},
@@ -315,7 +341,8 @@ int getTextWidth(const string& text, int scale) {
 enum GameState {
     MENU,
     SETTINGS,
-    GAME
+    GAME,
+    GAME_OVER
 };
 
 // ================================
@@ -351,12 +378,30 @@ int main(int argc, char* argv[])
         fish.push_back({ float(rand() % SCREEN_WIDTH), float(rand() % SCREEN_HEIGHT), 20, 1.5f, 1, false });
     }
     for (int i = 0; i < 10; i++) {
-        fish.push_back({ float(rand() % SCREEN_WIDTH), float(rand() % SCREEN_HEIGHT), 40, 1.5f, 8, false });
+
+    float x, y;
+    float safeDistance = 150.0f;   // czerwone nie mogą być zbyt blisko gracza
+    bool ok = false;
+
+    while (!ok) {
+        x = float(rand() % SCREEN_WIDTH);
+        y = float(rand() % SCREEN_HEIGHT);
+
+        float dx = x - player.x;
+        float dy = y - player.y;
+        float dist = sqrt(dx * dx + dy * dy);
+
+        if (dist > safeDistance)
+            ok = true;
     }
+
+    fish.push_back({ x, y, 40, 1.5f, 8, false });
+}
+
     for (int i = 0; i < 15; i++) {
 
         float x, y;
-        float safeDistance = 200.0f;
+        float safeDistance = 200.0f; //niebieskie nie moga byc blisko gracza
         bool ok = false;
 
         while (!ok) {
@@ -527,9 +572,9 @@ int main(int argc, char* argv[])
                         boosterOwned = false;
                     }
                     else {
-                        cout << "GAME OVER!" << endl;
-                        running = false;
-                    }
+    gameState = GAME_OVER;
+}
+
                     break;
                 }
             }
@@ -660,6 +705,20 @@ else if (gameState == GAME)
                 SDL_RenderFillRect(renderer, &rect);
             }
         }
+        else if (gameState == GAME_OVER)
+{
+    SDL_SetRenderDrawColor(renderer, 0, 100, 200, 255);
+    SDL_RenderClear(renderer);
+
+    string msg = "GAME OVER";
+    int scale = 4;
+    int textWidth = getTextWidth(msg, scale);
+
+    int x = (SCREEN_WIDTH - textWidth) / 2;
+    int y = SCREEN_HEIGHT / 2 - 50;
+
+    drawText(renderer, msg, x, y, scale);
+}
 
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
