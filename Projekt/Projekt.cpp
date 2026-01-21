@@ -27,17 +27,18 @@ struct Fish {
     string move;
 };
 
-struct Fish fishtab[10] = {
-    {0,0,15,1.5,5,1,false,"horizontal"},
+struct Fish fishtab[11] = {
+    {0,0,15,1.3,5,1,false,"horizontal"},
     {0,0,25,1.25,15,5,false,"vertical"},
-    {0,0,50,1,50,10,false,"wave"},
-    {0,0,75,1,150,15,false,"horizontal"},
-    {0,0,100,1,250,20,false,"wave"},
-    {0,0,125,1,500,25,false,"wave"},
-    {0,0,150,1.5,750,30,false,"horizontal"},
-    {0,0,175,1,1000,50,false,"vertical"},
-    {0,0,200,.75,1500,75,false,"horizontal"},
-    {0,0,200,1,999999999999,0,false,"wave"},
+    {0,0,40,1.25,50,10,false,"wave"},
+    {0,0,50,1,150,15,false,"horizontal"},
+    {0,0,70,1.1,400,20,false,"vertical"},
+    {0,0,90,1.2,800,25,false,"wave"},
+    {0,0,100,1.5,1500,30,false,"horizontal"},
+    {0,0,125,1,2250,40,false,"vertical"},
+    {0,0,150,.75,3500,50,false,"horizontal"},
+    {0,0,175,.5,5000,100,false,"wave"},
+    {0,0,200,1.2,999999999999,0,false,"wave"},
 
 
 
@@ -389,7 +390,7 @@ int main(int argc, char* argv[])
     // ================================
     // GRACZ I RYBY
     // ================================
-    Fish player{ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 15, 5, 5, 5, true };
+    Fish player{ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 15, 3, 5, 5, true };
 
     //TWORZENIE RYB POCZATKOWYCH I ICH POCZATKOWE POZYCJE
     //TYP RYBY 1
@@ -574,8 +575,14 @@ int main(int argc, char* argv[])
                 f.y += (rand() % 3 - 1) * f.speed;
 
                 if (f.x < f.size / 2 || f.y < f.size / 2 || f.y > SCREEN_HEIGHT - f.size / 2) {
-                    f.x = SCREEN_WIDTH - f.size / 2;
-                    f.y = float(rand() % SCREEN_HEIGHT);
+                        f.x = SCREEN_WIDTH - f.size / 2;
+                        f.y = float(rand() % SCREEN_HEIGHT);
+                    if (f.mass == fishtab[9].mass || f.mass == fishtab[10].mass) { //mina(fishtab[10]) i najwieksza(fishtab[9]) ryba znikaja po ukonczeniu swojego ruchu, i pojawia sie ryba z parametrami fishtab[4]
+                        f.mass = fishtab[4].mass;
+                        f.massgain = fishtab[4].massgain;
+                        f.speed = fishtab[4].speed;
+                        f.size = fishtab[4].size;
+                    }
                 }
             }
 
@@ -597,14 +604,19 @@ int main(int argc, char* argv[])
 
                     if (player.mass >= fish[i].mass) {
                         player.mass += fish[i].massgain;
-
                         //przyrost masy po zjedzeniu
                         float enemymass,enemysize, dmass,dsize, eatcount;
+                        int gamestage;
                         for (int i = 0; i < 10; i++) {
                             if (player.mass <= fishtab[i].mass) {
                                 enemymass = fishtab[i].mass;
                                 enemysize = fishtab[i].size;
+                                gamestage = i-1;
                                 break;
+                            }
+                            else if (player.mass > fishtab[9].mass) {
+                                enemysize = 300;
+                                enemymass = 50000;
                             }
                         }
                         dmass = enemymass - fish[i].mass;
@@ -618,20 +630,26 @@ int main(int argc, char* argv[])
                         fish[i] = fish.back();
                         fish.pop_back();
                         int amount;
+                        int range[10] = {4,5,5,5,6,6,7,7,6,5};
+                        int add[10] = {0,0,0,1,1,1,2,3,4,5};
                         float x, y;
                         if (fish.size() < 10)
-                            amount = 10;
+                            amount = 7;
                         else
-                            amount = rand() % 5 - 1;
+                            amount = rand() % 3 ;
                         for (int j = 0; j < amount; j++) {
-                            int a = rand() % 4;
+                            int a = rand()% range[gamestage] + add[gamestage];
                             if(fishtab[a].move=="vertical") {
                             x = float(rand() % SCREEN_WIDTH);
                             y = 0;
                             }
-                            else {
+                            else if(fishtab[a].move == "horizontal"){
                                 x = 0;
-                                y = float(rand() % SCREEN_WIDTH);
+                                y = float(rand() % SCREEN_HEIGHT);
+                            }
+                            else{
+                                x = SCREEN_WIDTH;
+                                y = float(rand() % SCREEN_HEIGHT);
                             }
                             fish.push_back({x,y,fishtab[a].size,fishtab[a].speed,fishtab[a].mass,fishtab[a].massgain,false,fishtab[a].move });
                         }
