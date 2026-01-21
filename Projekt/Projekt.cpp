@@ -24,26 +24,20 @@ struct Fish {
     float mass;
     float massgain;
     bool isPlayer;
-    string move; //zmienna uniwersalna do okreslania ruchow
+    string move;
 };
 
-
-//tablica rodzaji ryb
-struct Fish Fishtab[14] = {
-    {0,0,20,1.5,2,1,false,"horizontal"},
-    {0,0,40,1.5,10,5,false,"vertical"},
+struct Fish fishtab[10] = {
+    {0,0,15,1.5,2,1,false,"horizontal"},
+    {0,0,25,1.25,15,5,false,"vertical"},
     {0,0,50,1,50,10,false,"wave"},
-    {0,0,80,150,15,false,"horizontal"},
-    {0,0,100,250,20,false,"wave"},
-    {0,0,100,500,25,false,"wave"},
-    {0,0,100,750,30,false,"horizontal"},
-    {0,0,100,1000,50,false,"vertical"},
-    {0,0,100,1500,75,false,"horizontal"},
-    {0,0,100,2500,100,false,"wave"},
-    {0,0,100,5000,150,false,"horizontal"},
-    {0,0,100,10000,200,false,"horizontal"},
-    {0,0,100,20000,250,false,"wave"},
-    {0,0,200,999999999999,0,false,"wave"},
+    {0,0,75,1,150,15,false,"horizontal"},
+    {0,0,100,1,250,20,false,"wave"},
+    {0,0,125,1,500,25,false,"wave"},
+    {0,0,150,1.5,750,30,false,"horizontal"},
+    {0,0,175,1,1000,50,false,"vertical"},
+    {0,0,200,.75,1500,75,false,"horizontal"},
+    {0,0,200,1,999999999999,0,false,"wave"},
 
 
 
@@ -395,39 +389,45 @@ int main(int argc, char* argv[])
     // ================================
     // GRACZ I RYBY
     // ================================
-    Fish player{ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 30, 5, 5, 5, true };
+    Fish player{ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 15, 5, 5, 5, true };
 
+    //TWORZENIE RYB POCZATKOWYCH I ICH POCZATKOWE POZYCJE
+    //TYP RYBY 1
     vector<Fish> fish;
-    for (int i = 0; i < 30 + (rand() % 20); i++) {
-        fish.push_back({Fishtab[0]});
+    for (int i = 0; i < 25+(rand()%15); i++) {
+        fish.push_back({fishtab[0]});
         fish[i].x = float(rand() % SCREEN_WIDTH);
         fish[i].y = float(rand() % SCREEN_HEIGHT);
     }
-//przerobiony kod, pod nowa tablice z rybami
-    for (int i = 0; i < 10+(rand() % 5); i++) {
-           fish.push_back({Fishtab[1]});
-               float x = fish.size() - 1;
-               float safeDistance = 150.0f ;   // czerwone nie mogą być zbyt blisko gracza
-               bool ok = false;
-        while (!ok) {
-           fish[x].x = float(rand() % SCREEN_WIDTH);
-           fish[x].y = float(rand() % SCREEN_HEIGHT);
+    
+    //TYP RYBY 2
+    for (int i = 0; i < 10 + (rand() % 5); i++) {
+            fish.push_back({ fishtab[1] });
 
-            float dx = fish[x].x - player.x;
-            float dy = fish[x].y - player.y;
-            float dist = sqrt(dx * dx + dy * dy);
+            //Sprawdzanie czy ryby jest odpowiednio daleko od gracza w chwili rozpoczecia
+            float x = fish.size() - 1;
+            float safeDistance = 150.0f;
+            bool ok = false;
+            while (!ok) {
+                fish[x].x = float(rand() % SCREEN_WIDTH);
+                fish[x].y = float(rand() % SCREEN_HEIGHT);
 
-            if (dist > safeDistance)
-                ok = true;
+                float dx = fish[x].x - player.x;
+                float dy = fish[x].y - player.y;
+                float dist = sqrt(dx * dx + dy * dy);
+
+                if (dist > safeDistance)
+                    ok = true;
+            }
         }
-    }
-
+    // TYP RYBY 3
     for (int i = 0; i < 5+(rand()%10); i++) {
-        fish.push_back({ Fishtab[2] });
-        float x = fish.size() - 1;
-        float safeDistance = 200.0f; //niebieskie nie moga byc blisko gracza
-        bool ok = false;
+        fish.push_back({ fishtab[2] });
 
+        //Sprawdzanie czy ryby jest odpowiednio daleko od gracza w chwili rozpoczecia
+        float x = fish.size() - 1;
+        float safeDistance = 200.0f;
+        bool ok = false;
         while (!ok) {
             fish[x].x = SCREEN_WIDTH - 50 - (rand() % 600);
             fish[x].y = SCREEN_HEIGHT - 50 - (rand() % 600);
@@ -469,9 +469,8 @@ int main(int argc, char* argv[])
     // PĘTLA GRY
     // ================================
     while (running) {
-
         while (SDL_PollEvent(&event)) {
-
+            
             if (event.type == SDL_QUIT)
                 running = false;
 
@@ -484,6 +483,7 @@ int main(int argc, char* argv[])
                     running = false;
             }
 
+            //Sterowanie w menu
             if (event.type == SDL_MOUSEBUTTONDOWN && gameState == MENU) {
 
                 int mx = event.button.x;
@@ -499,6 +499,7 @@ int main(int argc, char* argv[])
                     gameState = SETTINGS;
                 }
             }
+            //ustawienia
             if (event.type == SDL_MOUSEBUTTONDOWN && gameState == SETTINGS) {
 
                 int mx = event.button.x;
@@ -522,7 +523,7 @@ int main(int argc, char* argv[])
         }
 
         if (gameState == GAME) {
-
+            //sterowanie w grze
             const Uint8* state = SDL_GetKeyboardState(NULL);
 
             if (useWASD) {
@@ -538,6 +539,7 @@ int main(int argc, char* argv[])
                 if (state[SDL_SCANCODE_RIGHT]) player.x += player.speed;
             }
 
+            //Granice ruchu gracza
             player.x = max(player.size / 2, min(player.x, SCREEN_WIDTH - player.size / 2));
             player.y = max(player.size / 2, min(player.y, SCREEN_HEIGHT - player.size / 2));
 
@@ -549,6 +551,8 @@ int main(int argc, char* argv[])
             boosterPulse += 0.1f;
             boosterAngle += 0.05f;
 
+
+            //typy ruchow ryb
             for (auto& f : fish) {
 
                 if (f.move == "horizontal") {
@@ -563,18 +567,19 @@ int main(int argc, char* argv[])
                         f.y = f.size / 2;
                         f.x = rand() % SCREEN_WIDTH;
                     }
-                    f.y += 1 * f.speed;
-                }
-                else if (f.move == "wave") {
-                    f.x -= f.speed;
-                    f.y += (rand() % 3 - 1) * f.speed;
+                f.y += 1 * f.speed;
+            }
+            else if (f.move == "wave") {
+                f.x -= f.speed;
+                f.y += (rand() % 3 - 1) * f.speed;
 
-                    if (f.x < f.size / 2 || f.y < f.size / 2 || f.y > SCREEN_HEIGHT - f.size / 2) {
-                        f.x = SCREEN_WIDTH - f.size / 2;
-                        f.y = float(rand() % SCREEN_HEIGHT);
-                    }
+                if (f.x < f.size / 2 || f.y < f.size / 2 || f.y > SCREEN_HEIGHT - f.size / 2) {
+                    f.x = SCREEN_WIDTH - f.size / 2;
+                    f.y = float(rand() % SCREEN_HEIGHT);
                 }
+            }
 
+                //granice ruchu ryb
                 f.x = max(f.size / 2, min(f.x, SCREEN_WIDTH - f.size / 2));
                 f.y = max(f.size / 2, min(f.y, SCREEN_HEIGHT - f.size / 2));
             }
@@ -585,16 +590,36 @@ int main(int argc, char* argv[])
                 booster.active = true;
             }
 
+
+            //kolizje z rybami
             for (int i = 0; i < (int)fish.size(); i++) {
                 if (checkCollision(player, fish[i])) {
 
-                            if (player.size >= fish[i].size) {
-            player.mass += fish[i].massgain;
-            player.size += fish[i].massgain;
-            fish[i] = fish.back();
-            fish.pop_back();
-        }
-
+                    //przyrost masy i respawn nowych ryb
+                    if (player.mass >= fish[i].mass) {
+                        player.mass += fish[i].massgain;
+                        player.size += fish[i].massgain;
+                        fish[i] = fish.back();
+                        fish.pop_back();
+                        int amount;
+                        float x, y;
+                        if (fish.size() < 10)
+                            amount = 7;
+                        else
+                            amount = rand() % 4 - 1;
+                        for (int j = 0; j < amount; j++) {
+                            int a = rand() % 4;
+                            if(fishtab[a].move=="vertical") {
+                            x = float(rand() % SCREEN_WIDTH);
+                            y = 0;
+                            }
+                            else {
+                                x = 0;
+                                y = float(rand() % SCREEN_WIDTH);
+                            }
+                            fish.push_back({x,y,fishtab[a].size,fishtab[a].speed,fishtab[a].mass,fishtab[a].massgain,false,fishtab[a].move });
+                        }
+                    }
                     else if (boosterOwned) {
                         fish[i] = fish.back();
                         fish.pop_back();
@@ -716,32 +741,23 @@ int main(int argc, char* argv[])
 
             for (auto& f : fish) {
 
-    // jadalne, jeśli jesteś wizualnie większy lub równy
-    bool edible = (player.size >= f.size);
+                if (f.mass <= player.mass)
+                    SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+                else if (f.move == "vertical")
+                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                else if (f.move == "wave")
+                    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+                else
+                    SDL_SetRenderDrawColor(renderer, 255, 128, 0, 255);
 
-    if (f.move == "wave") {
-        // niebieskie zawsze niebieskie, ale dalej podlegają logice zjadania
-        if (edible)
-            SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // żółte jadalne 
-        else
-            SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);   // ciemny niebieski = groźny
-    }
-    else {
-        if (edible)
-            SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); // żółte = jadalne
-        else
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);   // czerwone = groźne
-    }
-
-    SDL_Rect rect = {
-        int(f.x - f.size / 2),
-        int(f.y - f.size / 2),
-        int(f.size),
-        int(f.size)
-    };
-    SDL_RenderFillRect(renderer, &rect);
-}
-
+                SDL_Rect rect = {
+                    int(f.x - f.size / 2),
+                    int(f.y - f.size / 2),
+                    int(f.size),
+                    int(f.size)
+                };
+                SDL_RenderFillRect(renderer, &rect);
+            }
         }
         else if (gameState == GAME_OVER)
         {
