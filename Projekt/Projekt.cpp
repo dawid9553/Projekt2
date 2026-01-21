@@ -28,7 +28,7 @@ struct Fish {
 };
 
 struct Fish fishtab[10] = {
-    {0,0,15,1.5,2,1,false,"horizontal"},
+    {0,0,15,1.5,5,1,false,"horizontal"},
     {0,0,25,1.25,15,5,false,"vertical"},
     {0,0,50,1,50,10,false,"wave"},
     {0,0,75,1,150,15,false,"horizontal"},
@@ -595,18 +595,34 @@ int main(int argc, char* argv[])
             for (int i = 0; i < (int)fish.size(); i++) {
                 if (checkCollision(player, fish[i])) {
 
-                    //przyrost masy i respawn nowych ryb
                     if (player.mass >= fish[i].mass) {
                         player.mass += fish[i].massgain;
-                        player.size += fish[i].massgain;
+
+                        //przyrost masy po zjedzeniu
+                        float enemymass,enemysize, dmass,dsize, eatcount;
+                        for (int i = 0; i < 10; i++) {
+                            if (player.mass <= fishtab[i].mass) {
+                                enemymass = fishtab[i].mass;
+                                enemysize = fishtab[i].size;
+                                break;
+                            }
+                        }
+                        dmass = enemymass - fish[i].mass;
+                        eatcount = dmass / fish[i].massgain; //ilosc ile gracz musi zjesc ryb z ta sama masa co zjedzona, zeby moc zjesc nastepna wieksza rybe
+                        dsize = enemysize - fish[i].size;
+                        player.size += dsize / eatcount;
+
+
+
+                        //respawn nowych ryb po zjedzeniu
                         fish[i] = fish.back();
                         fish.pop_back();
                         int amount;
                         float x, y;
                         if (fish.size() < 10)
-                            amount = 7;
+                            amount = 10;
                         else
-                            amount = rand() % 4 - 1;
+                            amount = rand() % 5 - 1;
                         for (int j = 0; j < amount; j++) {
                             int a = rand() % 4;
                             if(fishtab[a].move=="vertical") {
