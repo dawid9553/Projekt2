@@ -5,6 +5,8 @@
 #include <ctime>
 #include <cmath>
 #include <algorithm>
+#include <string>
+#include <fstream>
 
 using namespace std;
 
@@ -13,6 +15,7 @@ const int SCREEN_HEIGHT = 800;
 
 // Sterowanie: true = WASD, false = strzałki
 bool useWASD = true;
+int bestScore = 0;
 
 // ================================
 // STRUKTURY
@@ -38,7 +41,7 @@ struct Fish fishtab[11] = {
     {0,0,125,1,2250,40,false,"vertical"},
     {0,0,150,.75,3500,50,false,"horizontal"},
     {0,0,175,.5,5000,100,false,"wave"},
-    {0,0,200,1.2,999999999999,0,false,"wave"},
+    {0,0,200,1.2,2147483646,0,false,"wave"},
 
 
 
@@ -307,6 +310,150 @@ void drawChar(SDL_Renderer* r, char c, int x, int y, int scale)
         memcpy(bitmap, tmp, sizeof(bitmap));
         break;
     }
+    case 'B': {
+    int tmp[7][5] = {
+        {1,1,1,1,0},
+        {1,0,0,0,1},
+        {1,0,0,0,1},
+        {1,1,1,1,0},
+        {1,0,0,0,1},
+        {1,0,0,0,1},
+        {1,1,1,1,0}
+    };
+    memcpy(bitmap, tmp, sizeof(bitmap));
+    break;
+}
+
+case '0': {
+    int tmp[7][5] = {
+        {1,1,1,1,1},
+        {1,0,0,0,1},
+        {1,0,0,1,1},
+        {1,0,1,0,1},
+        {1,1,0,0,1},
+        {1,0,0,0,1},
+        {1,1,1,1,1}
+    };
+    memcpy(bitmap, tmp, sizeof(bitmap));
+    break;
+}
+case '1': {
+    int tmp[7][5] = {
+        {0,0,1,0,0},
+        {0,1,1,0,0},
+        {1,0,1,0,0},
+        {0,0,1,0,0},
+        {0,0,1,0,0},
+        {0,0,1,0,0},
+        {1,1,1,1,1}
+    };
+    memcpy(bitmap, tmp, sizeof(bitmap));
+    break;
+}
+case '2': {
+    int tmp[7][5] = {
+        {1,1,1,1,1},
+        {0,0,0,0,1},
+        {0,0,0,1,1},
+        {0,0,1,1,0},
+        {0,1,1,0,0},
+        {1,1,0,0,0},
+        {1,1,1,1,1}
+    };
+    memcpy(bitmap, tmp, sizeof(bitmap));
+    break;
+}
+case '3': {
+    int tmp[7][5] = {
+        {1,1,1,1,1},
+        {0,0,0,0,1},
+        {0,0,0,1,1},
+        {0,0,1,1,0},
+        {0,0,0,1,1},
+        {0,0,0,0,1},
+        {1,1,1,1,1}
+    };
+    memcpy(bitmap, tmp, sizeof(bitmap));
+    break;
+}
+case '4': {
+    int tmp[7][5] = {
+        {1,0,0,1,0},
+        {1,0,0,1,0},
+        {1,0,0,1,0},
+        {1,1,1,1,1},
+        {0,0,0,1,0},
+        {0,0,0,1,0},
+        {0,0,0,1,0}
+    };
+    memcpy(bitmap, tmp, sizeof(bitmap));
+    break;
+}
+case '5': {
+    int tmp[7][5] = {
+        {1,1,1,1,1},
+        {1,0,0,0,0},
+        {1,1,1,1,0},
+        {0,0,0,0,1},
+        {0,0,0,0,1},
+        {1,0,0,0,1},
+        {1,1,1,1,0}
+    };
+    memcpy(bitmap, tmp, sizeof(bitmap));
+    break;
+}
+case '6': {
+    int tmp[7][5] = {
+        {1,1,1,1,1},
+        {1,0,0,0,0},
+        {1,1,1,1,0},
+        {1,0,0,0,1},
+        {1,0,0,0,1},
+        {1,0,0,0,1},
+        {1,1,1,1,0}
+    };
+    memcpy(bitmap, tmp, sizeof(bitmap));
+    break;
+}
+case '7': {
+    int tmp[7][5] = {
+        {1,1,1,1,1},
+        {0,0,0,0,1},
+        {0,0,0,1,0},
+        {0,0,1,0,0},
+        {0,1,0,0,0},
+        {0,1,0,0,0},
+        {0,1,0,0,0}
+    };
+    memcpy(bitmap, tmp, sizeof(bitmap));
+    break;
+}
+case '8': {
+    int tmp[7][5] = {
+        {1,1,1,1,1},
+        {1,0,0,0,1},
+        {1,0,0,0,1},
+        {1,1,1,1,1},
+        {1,0,0,0,1},
+        {1,0,0,0,1},
+        {1,1,1,1,1}
+    };
+    memcpy(bitmap, tmp, sizeof(bitmap));
+    break;
+}
+case '9': {
+    int tmp[7][5] = {
+        {1,1,1,1,1},
+        {1,0,0,0,1},
+        {1,0,0,0,1},
+        {1,1,1,1,1},
+        {0,0,0,0,1},
+        {0,0,0,0,1},
+        {1,1,1,1,1}
+    };
+    memcpy(bitmap, tmp, sizeof(bitmap));
+    break;
+}
     default:
         return;
     }
@@ -384,9 +531,15 @@ int main(int argc, char* argv[])
         SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     srand(time(nullptr));
-
+    {
+    ifstream in("highscore.txt");
+    if (in) {
+        in >> bestScore;
+    }
+}
     GameState gameState = MENU;
-
+    int score = 0;
+    
     // ================================
     // GRACZ I RYBY
     // ================================
@@ -543,7 +696,8 @@ int main(int argc, char* argv[])
             //Granice ruchu gracza
             player.x = max(player.size / 2, min(player.x, SCREEN_WIDTH - player.size / 2));
             player.y = max(player.size / 2, min(player.y, SCREEN_HEIGHT - player.size / 2));
-
+            score = int(player.mass);
+            
             if (booster.active && checkBoosterCollision(player, booster)) {
                 booster.active = false;
                 boosterOwned = true;
@@ -660,8 +814,15 @@ int main(int argc, char* argv[])
                         boosterOwned = false;
                     }
                     else {
-                        gameState = GAME_OVER;
-                    }
+    if (score > bestScore) {
+        bestScore = score;
+        ofstream out("highscore.txt");
+        if (out) {
+            out << bestScore;
+        }
+    }
+    gameState = GAME_OVER;
+}
 
                     break;
                 }
@@ -725,7 +886,11 @@ int main(int argc, char* argv[])
 
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
-
+            // WYSWIETLENIE WYNIKU
+string scoreText = "SCORE " + to_string(score);
+int scoreWidth = getTextWidth(scoreText, 3);
+drawText(renderer, scoreText, SCREEN_WIDTH - scoreWidth - 20, 20, 3);
+            
             SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
             SDL_Rect pRect = {
                 int(player.x - player.size / 2),
@@ -806,6 +971,24 @@ int main(int argc, char* argv[])
             int y = SCREEN_HEIGHT / 2 - 50;
 
             drawText(renderer, msg, x, y, scale);
+            // FINALOWY WYNIK
+string finalScore = "SCORE " + to_string(score);
+int fsWidth = getTextWidth(finalScore, 3);
+int fsX = (SCREEN_WIDTH - fsWidth) / 2;
+drawText(renderer, finalScore, fsX, y + 80, 3);
+
+// NAJLEPSZY WYNIK
+string bestText = "BEST SCORE " + to_string(bestScore);
+int bestWidth = getTextWidth(bestText, 3);
+int bestX = (SCREEN_WIDTH - bestWidth) / 2;
+drawText(renderer, bestText, bestX, y + 140, 3);
+// NOWY REKORD
+if (score == bestScore) {
+    string newRec = "NEW RECORD";
+    int nrWidth = getTextWidth(newRec, 3);
+    int nrX = (SCREEN_WIDTH - nrWidth) / 2;
+    drawText(renderer, newRec, nrX, y + 200, 3);
+}
         }
 
         SDL_RenderPresent(renderer);
