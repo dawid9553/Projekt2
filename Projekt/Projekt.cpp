@@ -541,12 +541,12 @@ int main(int argc, char* argv[])
     int score = 0;
 
     // ================================
-    // GRACZ I RYBY
+    // GRACZ I PRZECIWNICY
     // ================================
     Square player{ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 15, 3, 5, 5, true };
 
-    //TWORZENIE RYB POCZATKOWYCH I ICH POCZATKOWE POZYCJE
-    //TYP RYBY 1
+    //TWORZENIE PRZECIWNIKÓW POCZATKOWYCH I ICH POCZATKOWE POZYCJE
+    //TYP PRZECIWNIKA 1
     vector<Square> Square;
     for (int i = 0; i < 25 + (rand() % 15); i++) {
         Square.push_back({ enemies[0] });
@@ -554,11 +554,11 @@ int main(int argc, char* argv[])
         Square[i].y = float(rand() % SCREEN_HEIGHT);
     }
 
-    //TYP RYBY 2
+    //TYP PRZECIWNIKA 2
     for (int i = 0; i < 10 + (rand() % 5); i++) {
         Square.push_back({ enemies[1] });
 
-        //Sprawdzanie czy ryby jest odpowiednio daleko od gracza w chwili rozpoczecia
+        //Sprawdzanie czy przeciwnicy jest odpowiednio daleko od gracza w chwili rozpoczecia
         float x = Square.size() - 1;
         float safeDistance = 150.0f;
         bool ok = false;
@@ -574,11 +574,11 @@ int main(int argc, char* argv[])
                 ok = true;
         }
     }
-    // TYP RYBY 3
+    // TYP PRZECIWNIKA 3
     for (int i = 0; i < 5 + (rand() % 10); i++) {
         Square.push_back({ enemies[2] });
 
-        //Sprawdzanie czy ryby jest odpowiednio daleko od gracza w chwili rozpoczecia
+        //Sprawdzanie czy przeciwnicy jest odpowiednio daleko od gracza w chwili rozpoczecia
         float x = Square.size() - 1;
         float safeDistance = 200.0f;
         bool ok = false;
@@ -707,7 +707,7 @@ int main(int argc, char* argv[])
             boosterAngle += 0.05f;
 
 
-            //typy ruchow ryb
+            //typy ruchow przeciwników
             for (auto& f : Square) {
 
                 if (f.move == "horizontal") {
@@ -752,7 +752,7 @@ int main(int argc, char* argv[])
             }
 
 
-            //kolizje z rybami
+            //kolizje z przeciwnikami
             for (int i = 0; i < (int)Square.size(); i++) {
                 if (checkCollision(player, Square[i])) {
 
@@ -760,7 +760,7 @@ int main(int argc, char* argv[])
                         player.mass += Square[i].massgain;
                         //przyrost masy po zjedzeniu
                         float enemymass, enemysize, dmass, dsize, eatcount;
-                        int gamestage; //okresla na jakim etapie gry jestesmy, ktore ryby juz mozemy zjesc
+                        int gamestage; //okresla na jakim etapie gry jestesmy, ktorych przeciwników juz mozemy zjesc
                         for (int i = 0; i < 10; i++) {
                             if (player.mass <= enemies[i].mass) {
                                 enemymass = enemies[i].mass;
@@ -774,13 +774,13 @@ int main(int argc, char* argv[])
                             }
                         }
                         dmass = enemymass - Square[i].mass;
-                        eatcount = dmass / Square[i].massgain; //ilosc ile gracz musi zjesc ryb z ta sama masa co zjedzona, zeby moc zjesc nastepna wieksza rybe
+                        eatcount = dmass / Square[i].massgain; //ilosc ile gracz musi zjesc przeciwników z ta sama masa co zjedzona, zeby móc zjesc nastepna wiekszego przeciwnika
                         dsize = enemysize - Square[i].size;
                         player.size += dsize / eatcount;
 
 
 
-                        //respawn nowych ryb po zjedzeniu
+                        //respawn nowych przeciwników po zjedzeniu
                         Square[i] = Square.back();
                         Square.pop_back();
                         int amount; //ilosc nowych przeciwnikow 
