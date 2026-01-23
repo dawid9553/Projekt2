@@ -20,7 +20,7 @@ int bestScore = 0;
 // ================================
 // STRUKTURY
 // ================================
-struct Fish {
+struct Square {
     float x, y;
     float size;
     float speed;
@@ -30,18 +30,18 @@ struct Fish {
     string move;
 };
 
-struct Fish fishtab[11] = {
+struct Square enemies[11] = {
     {0,0,15,1.3,5,1,false,"horizontal"},
     {0,0,25,1.25,15,5,false,"vertical"},
     {0,0,40,1.25,50,10,false,"wave"},
     {0,0,50,1,150,15,false,"horizontal"},
-    {0,0,70,1.1,400,20,false,"vertical"},
-    {0,0,90,1.2,800,25,false,"wave"},
-    {0,0,100,1.5,1500,30,false,"horizontal"},
-    {0,0,125,1,2250,40,false,"vertical"},
-    {0,0,150,.75,3500,50,false,"horizontal"},
-    {0,0,175,.5,5000,100,false,"wave"},
-    {0,0,200,1.2,2147483646,0,false,"wave"},
+    {0,0,67.5,1.1,400,20,false,"vertical"},
+    {0,0,75,1.2,800,25,false,"wave"},
+    {0,0,90,1.5,1500,30,false,"horizontal"},
+    {0,0,100,1,2250,40,false,"vertical"},
+    {0,0,125,.75,3500,50,false,"horizontal"},
+    {0,0,150,.5,5000,100,false,"wave"},
+    {0,0,150,1.2,2147483646,0,false,"wave"},
 
 
 
@@ -56,14 +56,14 @@ struct Booster {
 // ================================
 // KOLIZJE
 // ================================
-bool checkCollision(const Fish& a, const Fish& b) {
+bool checkCollision(const Square& a, const Square& b) {
     float dx = a.x - b.x;
     float dy = a.y - b.y;
     float distance = sqrt(dx * dx + dy * dy);
     return distance < (a.size / 2 + b.size / 2);
 }
 
-bool checkBoosterCollision(const Fish& p, const Booster& b) {
+bool checkBoosterCollision(const Square& p, const Booster& b) {
     float dx = p.x - b.x;
     float dy = p.y - b.y;
     float dist = sqrt(dx * dx + dy * dy);
@@ -311,149 +311,149 @@ void drawChar(SDL_Renderer* r, char c, int x, int y, int scale)
         break;
     }
     case 'B': {
-    int tmp[7][5] = {
-        {1,1,1,1,0},
-        {1,0,0,0,1},
-        {1,0,0,0,1},
-        {1,1,1,1,0},
-        {1,0,0,0,1},
-        {1,0,0,0,1},
-        {1,1,1,1,0}
-    };
-    memcpy(bitmap, tmp, sizeof(bitmap));
-    break;
-}
+        int tmp[7][5] = {
+            {1,1,1,1,0},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,1,1,1,0},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,1,1,1,0}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
 
-case '0': {
-    int tmp[7][5] = {
-        {1,1,1,1,1},
-        {1,0,0,0,1},
-        {1,0,0,1,1},
-        {1,0,1,0,1},
-        {1,1,0,0,1},
-        {1,0,0,0,1},
-        {1,1,1,1,1}
-    };
-    memcpy(bitmap, tmp, sizeof(bitmap));
-    break;
-}
-case '1': {
-    int tmp[7][5] = {
-        {0,0,1,0,0},
-        {0,1,1,0,0},
-        {1,0,1,0,0},
-        {0,0,1,0,0},
-        {0,0,1,0,0},
-        {0,0,1,0,0},
-        {1,1,1,1,1}
-    };
-    memcpy(bitmap, tmp, sizeof(bitmap));
-    break;
-}
-case '2': {
-    int tmp[7][5] = {
-        {1,1,1,1,1},
-        {0,0,0,0,1},
-        {0,0,0,1,1},
-        {0,0,1,1,0},
-        {0,1,1,0,0},
-        {1,1,0,0,0},
-        {1,1,1,1,1}
-    };
-    memcpy(bitmap, tmp, sizeof(bitmap));
-    break;
-}
-case '3': {
-    int tmp[7][5] = {
-        {1,1,1,1,1},
-        {0,0,0,0,1},
-        {0,0,0,1,1},
-        {0,0,1,1,0},
-        {0,0,0,1,1},
-        {0,0,0,0,1},
-        {1,1,1,1,1}
-    };
-    memcpy(bitmap, tmp, sizeof(bitmap));
-    break;
-}
-case '4': {
-    int tmp[7][5] = {
-        {1,0,0,1,0},
-        {1,0,0,1,0},
-        {1,0,0,1,0},
-        {1,1,1,1,1},
-        {0,0,0,1,0},
-        {0,0,0,1,0},
-        {0,0,0,1,0}
-    };
-    memcpy(bitmap, tmp, sizeof(bitmap));
-    break;
-}
-case '5': {
-    int tmp[7][5] = {
-        {1,1,1,1,1},
-        {1,0,0,0,0},
-        {1,1,1,1,0},
-        {0,0,0,0,1},
-        {0,0,0,0,1},
-        {1,0,0,0,1},
-        {1,1,1,1,0}
-    };
-    memcpy(bitmap, tmp, sizeof(bitmap));
-    break;
-}
-case '6': {
-    int tmp[7][5] = {
-        {1,1,1,1,1},
-        {1,0,0,0,0},
-        {1,1,1,1,0},
-        {1,0,0,0,1},
-        {1,0,0,0,1},
-        {1,0,0,0,1},
-        {1,1,1,1,0}
-    };
-    memcpy(bitmap, tmp, sizeof(bitmap));
-    break;
-}
-case '7': {
-    int tmp[7][5] = {
-        {1,1,1,1,1},
-        {0,0,0,0,1},
-        {0,0,0,1,0},
-        {0,0,1,0,0},
-        {0,1,0,0,0},
-        {0,1,0,0,0},
-        {0,1,0,0,0}
-    };
-    memcpy(bitmap, tmp, sizeof(bitmap));
-    break;
-}
-case '8': {
-    int tmp[7][5] = {
-        {1,1,1,1,1},
-        {1,0,0,0,1},
-        {1,0,0,0,1},
-        {1,1,1,1,1},
-        {1,0,0,0,1},
-        {1,0,0,0,1},
-        {1,1,1,1,1}
-    };
-    memcpy(bitmap, tmp, sizeof(bitmap));
-    break;
-}
-case '9': {
-    int tmp[7][5] = {
-        {1,1,1,1,1},
-        {1,0,0,0,1},
-        {1,0,0,0,1},
-        {1,1,1,1,1},
-        {0,0,0,0,1},
-        {0,0,0,0,1},
-        {1,1,1,1,1}
-    };
-    memcpy(bitmap, tmp, sizeof(bitmap));
-    break;
-}
+    case '0': {
+        int tmp[7][5] = {
+            {1,1,1,1,1},
+            {1,0,0,0,1},
+            {1,0,0,1,1},
+            {1,0,1,0,1},
+            {1,1,0,0,1},
+            {1,0,0,0,1},
+            {1,1,1,1,1}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case '1': {
+        int tmp[7][5] = {
+            {0,0,1,0,0},
+            {0,1,1,0,0},
+            {1,0,1,0,0},
+            {0,0,1,0,0},
+            {0,0,1,0,0},
+            {0,0,1,0,0},
+            {1,1,1,1,1}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case '2': {
+        int tmp[7][5] = {
+            {1,1,1,1,1},
+            {0,0,0,0,1},
+            {0,0,0,1,1},
+            {0,0,1,1,0},
+            {0,1,1,0,0},
+            {1,1,0,0,0},
+            {1,1,1,1,1}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case '3': {
+        int tmp[7][5] = {
+            {1,1,1,1,1},
+            {0,0,0,0,1},
+            {0,0,0,1,1},
+            {0,0,1,1,0},
+            {0,0,0,1,1},
+            {0,0,0,0,1},
+            {1,1,1,1,1}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case '4': {
+        int tmp[7][5] = {
+            {1,0,0,1,0},
+            {1,0,0,1,0},
+            {1,0,0,1,0},
+            {1,1,1,1,1},
+            {0,0,0,1,0},
+            {0,0,0,1,0},
+            {0,0,0,1,0}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case '5': {
+        int tmp[7][5] = {
+            {1,1,1,1,1},
+            {1,0,0,0,0},
+            {1,1,1,1,0},
+            {0,0,0,0,1},
+            {0,0,0,0,1},
+            {1,0,0,0,1},
+            {1,1,1,1,0}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case '6': {
+        int tmp[7][5] = {
+            {1,1,1,1,1},
+            {1,0,0,0,0},
+            {1,1,1,1,0},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,1,1,1,0}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case '7': {
+        int tmp[7][5] = {
+            {1,1,1,1,1},
+            {0,0,0,0,1},
+            {0,0,0,1,0},
+            {0,0,1,0,0},
+            {0,1,0,0,0},
+            {0,1,0,0,0},
+            {0,1,0,0,0}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case '8': {
+        int tmp[7][5] = {
+            {1,1,1,1,1},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,1,1,1,1},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,1,1,1,1}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
+    case '9': {
+        int tmp[7][5] = {
+            {1,1,1,1,1},
+            {1,0,0,0,1},
+            {1,0,0,0,1},
+            {1,1,1,1,1},
+            {0,0,0,0,1},
+            {0,0,0,0,1},
+            {1,1,1,1,1}
+        };
+        memcpy(bitmap, tmp, sizeof(bitmap));
+        break;
+    }
     default:
         return;
     }
@@ -519,7 +519,7 @@ int main(int argc, char* argv[])
     SDL_Init(SDL_INIT_VIDEO);
 
     SDL_Window* window = SDL_CreateWindow(
-        "Fish Eat Get Big",
+        "Squares.io",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         SCREEN_WIDTH,
@@ -532,62 +532,62 @@ int main(int argc, char* argv[])
 
     srand(time(nullptr));
     {
-    ifstream in("highscore.txt");
-    if (in) {
-        in >> bestScore;
+        ifstream in("highscore.txt");
+        if (in) {
+            in >> bestScore;
+        }
     }
-}
     GameState gameState = MENU;
     int score = 0;
-    
+
     // ================================
     // GRACZ I RYBY
     // ================================
-    Fish player{ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 15, 3, 5, 5, true };
+    Square player{ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 15, 3, 5, 5, true };
 
     //TWORZENIE RYB POCZATKOWYCH I ICH POCZATKOWE POZYCJE
     //TYP RYBY 1
-    vector<Fish> fish;
-    for (int i = 0; i < 25+(rand()%15); i++) {
-        fish.push_back({fishtab[0]});
-        fish[i].x = float(rand() % SCREEN_WIDTH);
-        fish[i].y = float(rand() % SCREEN_HEIGHT);
+    vector<Square> Square;
+    for (int i = 0; i < 25 + (rand() % 15); i++) {
+        Square.push_back({ enemies[0] });
+        Square[i].x = float(rand() % SCREEN_WIDTH);
+        Square[i].y = float(rand() % SCREEN_HEIGHT);
     }
-    
+
     //TYP RYBY 2
     for (int i = 0; i < 10 + (rand() % 5); i++) {
-            fish.push_back({ fishtab[1] });
-
-            //Sprawdzanie czy ryby jest odpowiednio daleko od gracza w chwili rozpoczecia
-            float x = fish.size() - 1;
-            float safeDistance = 150.0f;
-            bool ok = false;
-            while (!ok) {
-                fish[x].x = float(rand() % SCREEN_WIDTH);
-                fish[x].y = float(rand() % SCREEN_HEIGHT);
-
-                float dx = fish[x].x - player.x;
-                float dy = fish[x].y - player.y;
-                float dist = sqrt(dx * dx + dy * dy);
-
-                if (dist > safeDistance)
-                    ok = true;
-            }
-        }
-    // TYP RYBY 3
-    for (int i = 0; i < 5+(rand()%10); i++) {
-        fish.push_back({ fishtab[2] });
+        Square.push_back({ enemies[1] });
 
         //Sprawdzanie czy ryby jest odpowiednio daleko od gracza w chwili rozpoczecia
-        float x = fish.size() - 1;
+        float x = Square.size() - 1;
+        float safeDistance = 150.0f;
+        bool ok = false;
+        while (!ok) {
+            Square[x].x = float(rand() % SCREEN_WIDTH);
+            Square[x].y = float(rand() % SCREEN_HEIGHT);
+
+            float dx = Square[x].x - player.x;
+            float dy = Square[x].y - player.y;
+            float dist = sqrt(dx * dx + dy * dy);
+
+            if (dist > safeDistance)
+                ok = true;
+        }
+    }
+    // TYP RYBY 3
+    for (int i = 0; i < 5 + (rand() % 10); i++) {
+        Square.push_back({ enemies[2] });
+
+        //Sprawdzanie czy ryby jest odpowiednio daleko od gracza w chwili rozpoczecia
+        float x = Square.size() - 1;
         float safeDistance = 200.0f;
         bool ok = false;
         while (!ok) {
-            fish[x].x = SCREEN_WIDTH - 50 - (rand() % 600);
-            fish[x].y = SCREEN_HEIGHT - 50 - (rand() % 600);
+            Square[x].x = SCREEN_WIDTH - 50 - (rand() % 600);
+            Square[x].y = SCREEN_HEIGHT - 50 - (rand() % 600);
 
-            float dx = fish[x].x - player.x;
-            float dy = fish[x].y - player.y;
+            float dx = Square[x].x - player.x;
+            float dy = Square[x].y - player.y;
             float dist = sqrt(dx * dx + dy * dy);
 
             if (dist > safeDistance) ok = true;
@@ -624,7 +624,7 @@ int main(int argc, char* argv[])
     // ================================
     while (running) {
         while (SDL_PollEvent(&event)) {
-            
+
             if (event.type == SDL_QUIT)
                 running = false;
 
@@ -697,7 +697,7 @@ int main(int argc, char* argv[])
             player.x = max(player.size / 2, min(player.x, SCREEN_WIDTH - player.size / 2));
             player.y = max(player.size / 2, min(player.y, SCREEN_HEIGHT - player.size / 2));
             score = int(player.mass);
-            
+
             if (booster.active && checkBoosterCollision(player, booster)) {
                 booster.active = false;
                 boosterOwned = true;
@@ -708,7 +708,7 @@ int main(int argc, char* argv[])
 
 
             //typy ruchow ryb
-            for (auto& f : fish) {
+            for (auto& f : Square) {
 
                 if (f.move == "horizontal") {
                     if (f.x == SCREEN_WIDTH - f.size / 2) {
@@ -722,23 +722,23 @@ int main(int argc, char* argv[])
                         f.y = f.size / 2;
                         f.x = rand() % SCREEN_WIDTH;
                     }
-                f.y += 1 * f.speed;
-            }
-            else if (f.move == "wave") {
-                f.x -= f.speed;
-                f.y += (rand() % 3 - 1) * f.speed;
+                    f.y += 1 * f.speed;
+                }
+                else if (f.move == "wave") {
+                    f.x -= f.speed;
+                    f.y += (rand() % 3 - 1) * f.speed;
 
-                if (f.x < f.size / 2 || f.y < f.size / 2 || f.y > SCREEN_HEIGHT - f.size / 2) {
+                    if (f.x < f.size / 2 || f.y < f.size / 2 || f.y > SCREEN_HEIGHT - f.size / 2) {
                         f.x = SCREEN_WIDTH - f.size / 2;
                         f.y = float(rand() % SCREEN_HEIGHT);
-                    if (f.mass == fishtab[9].mass || f.mass == fishtab[10].mass) { //mina(fishtab[10]) i najwieksza(fishtab[9]) ryba znikaja po ukonczeniu swojego ruchu, i pojawia sie ryba z parametrami fishtab[4]
-                        f.mass = fishtab[4].mass;
-                        f.massgain = fishtab[4].massgain;
-                        f.speed = fishtab[4].speed;
-                        f.size = fishtab[4].size;
+                        if (f.mass == enemies[9].mass || f.mass == enemies[10].mass) { //mina(enemy[10]) i najwieksza(enemy[9]) przeciwnik znikaja po ukonczeniu swojego ruchu, i pojawia sie przeciwnik z parametrami enemy[4]
+                            f.mass = enemies[4].mass;
+                            f.massgain = enemies[4].massgain;
+                            f.speed = enemies[4].speed;
+                            f.size = enemies[4].size;
+                        }
                     }
                 }
-            }
 
                 //granice ruchu ryb
                 f.x = max(f.size / 2, min(f.x, SCREEN_WIDTH - f.size / 2));
@@ -753,76 +753,93 @@ int main(int argc, char* argv[])
 
 
             //kolizje z rybami
-            for (int i = 0; i < (int)fish.size(); i++) {
-                if (checkCollision(player, fish[i])) {
+            for (int i = 0; i < (int)Square.size(); i++) {
+                if (checkCollision(player, Square[i])) {
 
-                    if (player.mass >= fish[i].mass) {
-                        player.mass += fish[i].massgain;
+                    if (player.mass >= Square[i].mass) {
+                        player.mass += Square[i].massgain;
                         //przyrost masy po zjedzeniu
-                        float enemymass,enemysize, dmass,dsize, eatcount;
-                        int gamestage;
+                        float enemymass, enemysize, dmass, dsize, eatcount;
+                        int gamestage; //okresla na jakim etapie gry jestesmy, ktore ryby juz mozemy zjesc
                         for (int i = 0; i < 10; i++) {
-                            if (player.mass <= fishtab[i].mass) {
-                                enemymass = fishtab[i].mass;
-                                enemysize = fishtab[i].size;
-                                gamestage = i-1;
+                            if (player.mass <= enemies[i].mass) {
+                                enemymass = enemies[i].mass;
+                                enemysize = enemies[i].size;
+                                gamestage = i - 1; 
                                 break;
                             }
-                            else if (player.mass > fishtab[9].mass) {
+                            else if (player.mass > enemies[9].mass) {
                                 enemysize = 300;
                                 enemymass = 50000;
                             }
                         }
-                        dmass = enemymass - fish[i].mass;
-                        eatcount = dmass / fish[i].massgain; //ilosc ile gracz musi zjesc ryb z ta sama masa co zjedzona, zeby moc zjesc nastepna wieksza rybe
-                        dsize = enemysize - fish[i].size;
+                        dmass = enemymass - Square[i].mass;
+                        eatcount = dmass / Square[i].massgain; //ilosc ile gracz musi zjesc ryb z ta sama masa co zjedzona, zeby moc zjesc nastepna wieksza rybe
+                        dsize = enemysize - Square[i].size;
                         player.size += dsize / eatcount;
 
 
 
                         //respawn nowych ryb po zjedzeniu
-                        fish[i] = fish.back();
-                        fish.pop_back();
-                        int amount;
-                        int range[10] = {4,5,5,5,6,6,7,7,6,5};
-                        int add[10] = {0,0,0,1,1,1,2,3,4,5};
+                        Square[i] = Square.back();
+                        Square.pop_back();
+                        int amount; //ilosc nowych przeciwnikow 
+                        //tablice do określania jacy przeciwnicy powinni sie pojawiac, zaleznie od masy jaka mamy
+                        int range[10] = { 4,5,5,5,6,6,7,7,6,5 };
+                        int add[10] = { 0,0,0,1,1,2,2,3,4,5 };
                         float x, y;
-                        if (fish.size() < 10)
-                            amount = 7;
+                        if (Square.size() < 10)
+                            amount = 5;
                         else
-                            amount = rand() % 3 ;
+                            amount = rand() % 3;
                         for (int j = 0; j < amount; j++) {
-                            int a = rand()% range[gamestage] + add[gamestage];
-                            if(fishtab[a].move=="vertical") {
-                            x = float(rand() % SCREEN_WIDTH);
-                            y = 0;
+                            int a = rand() % range[gamestage] + add[gamestage];
+                            if (enemies[a].move == "vertical") {
+                                x = float(rand() % SCREEN_WIDTH);
+                                y = 0;
                             }
-                            else if(fishtab[a].move == "horizontal"){
+                            else if (enemies[a].move == "horizontal") {
                                 x = 0;
                                 y = float(rand() % SCREEN_HEIGHT);
                             }
-                            else{
+                            else {
                                 x = SCREEN_WIDTH;
                                 y = float(rand() % SCREEN_HEIGHT);
                             }
-                            fish.push_back({x,y,fishtab[a].size,fishtab[a].speed,fishtab[a].mass,fishtab[a].massgain,false,fishtab[a].move });
+                            Square.push_back({ x,y,enemies[a].size,enemies[a].speed,enemies[a].mass,enemies[a].massgain,false,enemies[a].move });
+                        }
+
+                        //spawn zabojczych przeciwnikow
+                        if (gamestage<5) {
+                            if (rand() % 8 < 1) //12.5% na spawn zabojczego przeciwnika
+                                Square.push_back({ SCREEN_WIDTH,float(rand() % SCREEN_HEIGHT),enemies[10].size,enemies[10].speed,enemies[10].mass,enemies[10].massgain,false,enemies[10].move });
+                            
+                        }
+                        else if(gamestage<8){
+                            if (rand() % 5 < 1) //20% na spawn zabojczego przeciwnika
+                                Square.push_back({ SCREEN_WIDTH,float(rand() % SCREEN_HEIGHT),enemies[10].size,enemies[10].speed,enemies[10].mass,enemies[10].massgain,false,enemies[10].move });
+                            
+                        }
+                        else {
+                            if(rand() % 20 < 7) //35% na spawn zabojczego przeciwnika
+                                Square.push_back({ SCREEN_WIDTH,float(rand() % SCREEN_HEIGHT),enemies[10].size,enemies[10].speed,enemies[10].mass,enemies[10].massgain,false,enemies[10].move });
                         }
                     }
                     else if (boosterOwned) {
-                        fish[i] = fish.back();
-                        fish.pop_back();
+                        Square[i] = Square.back();
+                        Square.pop_back();
                         boosterOwned = false;
                     }
                     else {
-    if (score > bestScore) {
-        bestScore = score;
-        ofstream out("highscore.txt");
-        if (out) {
-            out << bestScore;
-        }
-    }
-    gameState = GAME_OVER;
-}
+                        if (score > bestScore) {
+                            bestScore = score;
+                            ofstream out("highscore.txt");
+                            if (out) {
+                                out << bestScore;
+                            }
+                        }
+                        gameState = GAME_OVER;
+                    }
 
                     break;
                 }
@@ -887,10 +904,10 @@ int main(int argc, char* argv[])
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
             // WYSWIETLENIE WYNIKU
-string scoreText = "SCORE " + to_string(score);
-int scoreWidth = getTextWidth(scoreText, 3);
-drawText(renderer, scoreText, SCREEN_WIDTH - scoreWidth - 20, 20, 3);
-            
+            string scoreText = "SCORE " + to_string(score);
+            int scoreWidth = getTextWidth(scoreText, 3);
+            drawText(renderer, scoreText, SCREEN_WIDTH - scoreWidth - 20, 20, 3);
+
             SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
             SDL_Rect pRect = {
                 int(player.x - player.size / 2),
@@ -938,17 +955,18 @@ drawText(renderer, scoreText, SCREEN_WIDTH - scoreWidth - 20, 20, 3);
                 }
             }
 
-            for (auto& f : fish) {
+            for (auto& f : Square) {
 
                 if (f.mass <= player.mass)
                     SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-                else if (f.move == "vertical")
+                else if(f.mass==enemies[10].mass)
                     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                else if (f.move == "vertical")
+                    SDL_SetRenderDrawColor(renderer, 90, 60, 255, 255);
                 else if (f.move == "wave")
-                    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+                    SDL_SetRenderDrawColor(renderer, 0, 192, 255, 255);
                 else
                     SDL_SetRenderDrawColor(renderer, 255, 128, 0, 255);
-
                 SDL_Rect rect = {
                     int(f.x - f.size / 2),
                     int(f.y - f.size / 2),
@@ -972,23 +990,23 @@ drawText(renderer, scoreText, SCREEN_WIDTH - scoreWidth - 20, 20, 3);
 
             drawText(renderer, msg, x, y, scale);
             // FINALOWY WYNIK
-string finalScore = "SCORE " + to_string(score);
-int fsWidth = getTextWidth(finalScore, 3);
-int fsX = (SCREEN_WIDTH - fsWidth) / 2;
-drawText(renderer, finalScore, fsX, y + 80, 3);
+            string finalScore = "SCORE " + to_string(score);
+            int fsWidth = getTextWidth(finalScore, 3);
+            int fsX = (SCREEN_WIDTH - fsWidth) / 2;
+            drawText(renderer, finalScore, fsX, y + 80, 3);
 
-// NAJLEPSZY WYNIK
-string bestText = "BEST SCORE " + to_string(bestScore);
-int bestWidth = getTextWidth(bestText, 3);
-int bestX = (SCREEN_WIDTH - bestWidth) / 2;
-drawText(renderer, bestText, bestX, y + 140, 3);
-// NOWY REKORD
-if (score == bestScore) {
-    string newRec = "NEW RECORD";
-    int nrWidth = getTextWidth(newRec, 3);
-    int nrX = (SCREEN_WIDTH - nrWidth) / 2;
-    drawText(renderer, newRec, nrX, y + 200, 3);
-}
+            // NAJLEPSZY WYNIK
+            string bestText = "BEST SCORE " + to_string(bestScore);
+            int bestWidth = getTextWidth(bestText, 3);
+            int bestX = (SCREEN_WIDTH - bestWidth) / 2;
+            drawText(renderer, bestText, bestX, y + 140, 3);
+            // NOWY REKORD
+            if (score == bestScore) {
+                string newRec = "NEW RECORD";
+                int nrWidth = getTextWidth(newRec, 3);
+                int nrX = (SCREEN_WIDTH - nrWidth) / 2;
+                drawText(renderer, newRec, nrX, y + 200, 3);
+            }
         }
 
         SDL_RenderPresent(renderer);
