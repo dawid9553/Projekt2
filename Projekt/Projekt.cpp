@@ -1008,11 +1008,15 @@ int main(int argc, char* argv[])
                 drawText(renderer, newRec, nrX, y + 200, 3);
             }
         }
-
+        // ============================================================================
+        // WYŚWIETLENIE WSZYSTKIEGO NA EKRANIE
+        // ============================================================================
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
-
+    // ============================================================================
+    // ZAMKNIĘCIE PROGRAMU
+    // ============================================================================
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
